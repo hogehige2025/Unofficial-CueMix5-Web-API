@@ -31,10 +31,10 @@ This actually only turns down the volume to the minimum, but it remembers the vo
 These functions are effective when using both speakers and headphones.
 
 - Listening Output Switch
-  Switches between Monitoring and Phones, enabling one and muting the other.
+  - Switches between Monitoring and Phones, enabling one and muting the other.
 
 - Pseudo Volume for Listening Output
-  Changing this pseudo volume adjusts the volume of the currently active output.
+  - Changing this pseudo volume adjusts the volume of the currently active output.
 
 ### Web UI
 Intuitively control each parameter from your browser.
@@ -76,7 +76,6 @@ dist/
     Double-click `uo_cm5_webapi.exe` to run the application.
     After launching, you can access the Web UI by navigating to `http://localhost:[listeningPort]` (e.g., `http://localhost:3000`) in your web browser.
 
-<<<<<<< HEAD
 ### 3. Uninstall
 =======
 ### 3. Generating Web API URLs
