@@ -19,7 +19,7 @@
     - Phones
     - Output Trim 1-10
 
--各 Mix
+- 各 Mix
     - ボリューム
     - ミュート
 
