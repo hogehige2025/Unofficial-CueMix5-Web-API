@@ -1,40 +1,48 @@
-# Unofficial CueMix5 Web API
+# Unofficial CueMix5 Web API (uo_cm5_webapi)
+Japanese(日本語) / [English](README.en.md)
+
+**非公式ツールに関する注意:**
+本アプリケーションはMOTU社によって公式にサポートされているものではありません。使用にあたっては、この点を十分にご理解ください。
 
 ## 概要
 
-このアプリケーションは、MOTU公式アプリケーション「CueMix 5」が操作するデバイスへの通信プロトコルを模倣し、HTTP APIおよびWeb UI経由でMOTUオーディオインターフェース（Ultralite-mk5など）を制御することを可能にします。古い（CueMix 5を使用しない）MOTUデバイスには対応していません。
+`uo_cm5_webapi`は、MOTU公式アプリケーション「CueMix 5」がデバイスと通信するプロトコルを模倣し、HTTP APIおよびWeb UIを通じてMOTUオーディオインターフェース（例: Ultralite-mk5）を制御するための非公式ツールです。CueMix 5を使用しない古いMOTUデバイスには対応していません。
 
 ![Web UI Screenshot](screenshot.png)
 
+## 動作確認済み環境
+- OS
+  - Windows 11
+- デバイス
+  - MOTU Ultralite mk5
+
 ## 主な機能
 
-### 制御可能なパラメータ
-現在、CueMix5上の以下のパラメーターを制御可能です。
+### 制御可能なパラメーター
+現在、`uo_cm5_webapi`でCueMix 5の以下のパラメーターを制御できます。
 
-- Inputページ
-    - Input Gain 1-8
+-   **Inputページ**
+    -   Input Gain (1～8チャンネル)
 
-- Outputページ
-    - Monitoring
-    - Phones
-    - Output Trim 1-10
+-   **Outputページ**
+    -   Monitoring
+    -   Phones
+    -   Output Trim (1～10チャンネル)
 
-- 各 Mix
-    - ボリューム
-    - ミュート
+-   **各Mix**
+    -   ボリューム
+    -   ミュート
 
 ## 疑似ミュート機能
-各Input,Outputはミュート機能を持ちませんが、API上で疑似的にミュートを実現しています。
-実際はボリュームを最低に下げているだけですが、変更前のボリュームを記憶しているのでミュートトグルのように動作します。
+MOTUデバイスのInput/Outputには本来ミュート機能がありませんが、`uo_cm5_webapi`ではAPI上で疑似的なミュート機能を提供します。これは、一時的にボリュームを最小値に設定し、元のボリューム値を記憶しておくことで、ミュートのON/OFFをトグルのように動作させるものです。
 
-## リスニング用機能
-スピーカー、ヘッドフォンの両方を使用している場合に有効な機能です。
+## リスニング支援機能
+スピーカーとヘッドフォンの両方を併用しているユーザー向けの機能です。
 
-- リスニング出力の切り替えスイッチ
-  - MonitoringとPhonesを切り替え、どちらか一方を有効に、もう一方をミュートにします。
-
-- リスニング出力用の疑似ボリューム
-  - 疑似ボリュームを変化させると有効な出力のボリュームが変化します。
+-   **リスニング出力の切り替えスイッチ**
+    -   MonitoringとPhonesの出力をワンクリックで切り替えます。現在有効な方をON、もう一方をOFF（ミュート）にします。
+-   **リスニング出力用マスターボリューム**
+    -   有効になっているリスニング出力（MonitoringまたはPhones）のボリュームをまとめて調整できます。
 
 ## Web UI
 ブラウザから各パラメータを直感的に操作できます。
@@ -46,54 +54,44 @@
 
 ### 1. インストール
 
-1.  GitHubの**リリースページ**から、最新の`uo_cm5_webapi_vX.X.X.zip`ファイルをダウンロードします。
+1. [ GitHubのリリースページ](https://github.com/hogehige2025/Unofficial-CueMix5-Web-API/releases)から、最新の`uo_cm5_webapi_vX.X.X.zip`ファイルをダウンロードします。
 2.  ダウンロードしたzipファイルを、好きな場所に展開（解凍）します。
 
-フォルダ構成は以下のようになっています。
-```
-dist/
-├── uo_cm5_webapi.exe  (アプリケーション本体)
-├── public/              (Web UI関連のファイル)
-├── windows/             (自動起動設定関連ファイル)
-│   ├── EnableStartup.bat
-│   └── DisableStartup.bat
-│   └── SetStartupTask.ps1
-│   └── template.xml
-└── ...                  (その他の関連ファイル)
-```
+展開される主要なファイルとフォルダは以下の通りです。
+
+|Filename     				|Description									|
+|:--------------------------|:----------------------------------------------|
+|uo_cm5_webapi.exe			|アプリケーション本体							|
+|EnableStartup.bat			|自動起動登録バッチ 							|
+|DisableStartup.bat			|自動起動登録解除バッチ							|
+|SetStartupTask.ps1			|タスクスケジューラ操作用Powershellスクリプト	|
+|public						|WebUI用ディレクトリ							|
 
 ### 2. 初回起動と自動起動設定
 
-1.  展開したフォルダ内の**`windows/EnableStartup.bat`**ファイルを**右クリックし、「管理者として実行」**を選択します。
-2.  PowerShellスクリプトが実行され、タスクスケジューラにアプリケーションが登録され、`uo_cm5_webapi.exe`が起動します。
-3.  ブラウザが自動的に開かない場合は、手動で`http://localhost:[listeningPort]`（デフォルト: `http://localhost:3000`）にアクセスしてWeb UIを表示します。
-4.  Web UIの**「Connection Settings」**セクションで、お使いのMOTUデバイスのIPアドレス、ポート、シリアルナンバーを入力し、「Reconnect MOTU」ボタンをクリックしてください。これにより設定が保存され、MOTUデバイスとの接続が試行されます。
-5.  Web UIを閉じてもアプリケーションはバックグラウンドで動作し続け、以降はPCログオン時に`uo_cm5_webapi.exe`が自動的に実行されるようになります。
+1. 展開したフォルダ内の **`windows/EnableStartup.bat`** ファイルを **右クリックし、「管理者として実行」** を選択します。
+2. このスクリプトによりタスクスケジューラにアプリケーションが登録され、`uo_cm5_webapi.exe`が起動します。
+3. アプリケーションが起動すると、既定のブラウザが自動的に開き、Web UI（`http://localhost:3000`）が表示されます。万が一開かない場合は、手動でアクセスしてください。
+4. Web UIの **「Connection Settings」** セクションで、お使いのMOTUデバイスのIPアドレス、ポート、シリアルナンバーを入力し、「Reconnect MOTU」ボタンをクリックしてください。これにより設定が保存され、MOTUデバイスとの接続が試行されます。
+5. Web UIを閉じてもアプリケーションはバックグラウンドで動作し続け、以降はPCログオン時に`uo_cm5_webapi.exe`が自動的に実行されるようになります。
 
-### 3. アプリケーションの手動実行と自動実行の停止
+### 3. アプリケーションの手動実行
+`uo_cm5_webapi.exe`をダブルクリックして実行します。起動後、ブラウザで`http://localhost:3000`にアクセスするとWeb UIが表示されます。
 
-*   **手動実行:**
-    `uo_cm5_webapi.exe`をダブルクリックして実行します。
-    起動後、ブラウザで`http://localhost:[listeningPort]`（例: `http://localhost:3000`）にアクセスするとWeb UIが表示されます。
+### 4. Web API URLの生成と利用
+Web UI上でボリュームなどを操作すると、画面下部の`Control URL`セクションに、その操作に対応するURLがリアルタイムで表示されます。
+`Copy Control URL to Clipboard`ボタンをクリックすると、表示されたURLがクリップボードにコピーされます。
 
-### 3. アンインストール
-=======
-### 3. Web APIのURL生成
-Web UIでボリュームなどの操作を行うと、`Control URL`セクションにURLが表示されます。
-`Copy Control URL to Clipboard`ボタンをクリックすることでクリップボードにURLがコピーされます。
-
-curl等でこのURLを開くことで同じ操作をAPI経由で行うことができます。
-この操作を外部ランチャーやショートカットに登録することで簡単にボリュームをコントロールできます。
+このURLを`curl`コマンドや、Stream Deckなどの外部ランチャー、あるいはショートカットキーに登録することで、Web UIを介さずにMOTUデバイスを制御できます。
 
 #### 例
 - リスニング用ボリュームを-31dBに設定
     - `curl "http://localhost:3000/set?c=global&o=listening&v=-31"`
 
-### 4. アンインストール
->>>>>>> develop
-1.  展開したフォルダ内の**`windows/DisableStartup.bat`**ファイルを**右クリックし、「管理者として実行」**を選択します。
-2.  PowerShellスクリプトが実行され、`uo_cm5_webapi.exe`が停止され、タスクスケジューラからアプリケーションが削除されます。
-3.　必要に応じて設定ファイル `%appdata%\uo_cm5_webapi` フォルダを削除してください。
+### 5. アンインストール
+1. 展開したフォルダ内の **`windows/DisableStartup.bat`** ファイルを **右クリックし、「管理者として実行」** を選択します。
+2. このスクリプトにより、実行中の`uo_cm5_webapi.exe`プロセスが停止され、タスクスケジューラから自動起動設定が削除されます。
+3. 最後に、アプリケーションのフォルダと、必要に応じて設定ファイルが保存されている `%appdata%\uo_cm5_webapi` フォルダを手動で削除してください。
 
 ## 開発者向け (For Developers)
 
@@ -184,14 +182,14 @@ WebSocket接続時に全てのパラメータがMOTUデバイスから送信さ�
     - Index : `0x0000`
     - Length : `0x0001`
     - value : `0x28`
-    - Send : `0x13930000000128`
+    - 送信データ : `0x13930000000128`
 
 - 例 `Main 1-2 Mix / Line 5` のボリュームを 0dbにする場合
     - ID : `0x03f8`
     - Index : `0x0004`
     - Length : `0x0004`
     - value : `0x01000000`
-    - Send : `0x03f80004000401000000`
+    - 送信データ : `0x03f80004000401000000`
 
 
 

@@ -1,10 +1,17 @@
 # Unofficial CueMix5 Web API
+[Japanese(日本語)](README.md) / English(英語)[](README.md)
 
 ## Overview
 
 This application allows you to control MOTU audio interfaces (e.g., Ultralite-mk5) via an HTTP API and a Web UI by mimicking the communication protocol used by the official MOTU application, "CueMix 5". It is not compatible with older MOTU devices that do not use CueMix 5.
 
 ![Web UI Screenshot](screenshot.png)
+
+## Verified Environments
+- OS
+  - Windows 11
+- Device
+  - MOTU Ultralite mk5
 
 ## Key Features
 
@@ -46,38 +53,33 @@ All operations correspond to simple HTTP requests, enabling control from externa
 
 ### 1. Installation
 
-1.  Download the latest `uo_cm5_webapi_vX.X.X.zip` file from the **Releases** page on GitHub.
+1.  Download the latest `uo_cm5_webapi_vX.X.X.zip` file from the [Releases page on GitHub](https://github.com/hogehige2025/Unofficial-CueMix5-Web-API/releases).
 2.  Extract (unzip) the downloaded zip file to a location of your choice.
 
-The folder structure is as follows:
-```
-dist/
-├── uo_cm5_webapi.exe  (The application executable)
-├── public/              (Web UI related files)
-├── windows/             (Auto-start setup related files)
-│   ├── EnableStartup.bat
-│   └── DisableStartup.bat
-│   └── SetStartupTask.ps1
-│   └── template.xml
-└── ...                  (Other related files)
-```
+The main files and folders extracted are as follows:
+
+|Filename     				|Description									|
+|:--------------------------|:----------------------------------------------|
+|uo_cm5_webapi.exe			|The application executable						|
+|EnableStartup.bat			|Batch file to register for auto-start			|
+|DisableStartup.bat			|Batch file to unregister from auto-start		|
+|SetStartupTask.ps1			|PowerShell script for Task Scheduler operations|
+|public						|Directory for the Web UI						|
 
 ### 2. Initial Launch and Auto-start Setup
 
 1.  Right-click the **`windows/EnableStartup.bat`** file in the extracted folder and select **"Run as administrator"**.
-2.  A PowerShell script will execute, registering the application with Task Scheduler and launching `uo_cm5_webapi.exe`.
+2.  This script registers the application with the Task Scheduler and launches `uo_cm5_webapi.exe`.
 3.  If your browser does not open automatically, manually access `http://localhost:[listeningPort]` (default: `http://localhost:3000`) to display the Web UI.
 4.  In the Web UI's **"Connection Settings"** section, enter the IP address, port, and serial number of your MOTU device, then click the "Reconnect MOTU" button. This will save the settings and attempt to connect to the MOTU device.
 5.  Even if you close the Web UI, the application will continue to run in the background. Subsequently, `uo_cm5_webapi.exe` will automatically execute when you log on to your PC.
 
-### 3. Manual Execution and Stopping Auto-start
+### 3. Manual Execution
 
 *   **Manual Execution:**
     Double-click `uo_cm5_webapi.exe` to run the application.
     After launching, you can access the Web UI by navigating to `http://localhost:[listeningPort]` (e.g., `http://localhost:3000`) in your web browser.
 
-### 3. Uninstall
-=======
 ### 3. Generating Web API URLs
 When you perform actions like adjusting volume in the Web UI, a URL appears in the `Control URL` section.
 Clicking the `Copy Control URL to Clipboard` button copies the URL to your clipboard.
@@ -90,7 +92,6 @@ Registering this action with an external launcher or shortcut enables easy volum
     - `curl “http://localhost:3000/set?c=global&o=listening&v=-31"`
 
 ### 4. Uninstall
->>>>>>> develop
 1.  Right-click the **`windows/DisableStartup.bat`** file in the extracted folder and select **"Run as administrator"**.
 2.  A PowerShell script will execute, stopping `uo_cm5_webapi.exe` and removing the application from Task Scheduler.
 3.  If necessary, delete the settings folder `%appdata%\uo_cm5_webapi`.

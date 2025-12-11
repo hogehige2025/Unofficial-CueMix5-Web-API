@@ -4,7 +4,9 @@
 # Build artifacts
 /build
 /dist
+/dist/
 /release
+/release/
 
 # User-specific configuration and state
 config/settings.json
