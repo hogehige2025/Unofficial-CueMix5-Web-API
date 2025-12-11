@@ -1,0 +1,19 @@
+# Dependencies
+/node_modules
+
+# Build artifacts
+/build
+/dist
+/release
+
+# User-specific configuration and state
+config/settings.json
+config/state.json
+
+# IDE and OS files
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db

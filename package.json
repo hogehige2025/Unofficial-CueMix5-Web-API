@@ -1,0 +1,21 @@
+{
+  "name": "unofficial-cuemix5-web-api",
+  "version": "0.1.0",
+  "description": "Unofficial CueMix5 Web API",
+  "main": "src/server.js",
+  "bin": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "build": "node sea-build.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "esbuild": "^0.20.2",
+    "fs-extra": "^11.2.0",
+    "postject": "^1.0.0-alpha.6"
+  }
+}
+

@@ -1,0 +1,181 @@
+[
+  {
+    "name": "Output",
+    "command": "output",
+    "operations": [
+      { "name": "Monitoring", "command": "monitoring", "type": "Trim", "id": 5011, "indices": [0], "min": -100, "max": 0, "default": -100 },
+      { "name": "Phones", "command": "phones", "type": "Trim", "id": 5000, "indices": [10, 11], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 1-2(Stereo)", "command": "output_1_2_stereo", "type": "Trim", "id": 5000, "indices": [6, 7], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 3-4(Stereo)", "command": "output_3_4_stereo", "type": "Trim", "id": 5000, "indices": [8, 9], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 5-6(Stereo)", "command": "output_5_6_stereo", "type": "Trim", "id": 5000, "indices": [0, 1], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 7-8(Stereo)", "command": "output_7_8_stereo", "type": "Trim", "id": 5000, "indices": [2, 3], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 9-10(Stereo)", "command": "output_9_10_stereo", "type": "Trim", "id": 5000, "indices": [4, 5], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 1(Mono)", "command": "output_1_mono", "type": "Trim", "id": 5000, "indices": [6], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 2(Mono)", "command": "output_2_mono", "type": "Trim", "id": 5000, "indices": [7], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 3(Mono)", "command": "output_3_mono", "type": "Trim", "id": 5000, "indices": [8], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 4(Mono)", "command": "output_4_mono", "type": "Trim", "id": 5000, "indices": [9], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 5(Mono)", "command": "output_5_mono", "type": "Trim", "id": 5000, "indices": [0], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 6(Mono)", "command": "output_6_mono", "type": "Trim", "id": 5000, "indices": [1], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 7(Mono)", "command": "output_7_mono", "type": "Trim", "id": 5000, "indices": [2], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 8(Mono)", "command": "output_8_mono", "type": "Trim", "id": 5000, "indices": [3], "min": -100, "max": 0, "default": -100 },
+      { "name": "Output 9(Mono)", "command": "output_9_mono", "type": "Trim", "id": 5000, "indices": [4], "min": -100, "max": 0, "default": -100 }
+    ]
+  },
+  {
+    "name": "Input",
+    "command": "input",
+    "operations": [
+      { "name": "Input 1-2(Stereo)", "command": "input_1_2_stereo", "type": "Gain", "id": 5001, "indices": [0, 1], "min": 0, "max": 74, "default": 0 },
+      { "name": "Input 3-4(Stereo)", "command": "input_3_4_stereo", "type": "Gain", "id": 5001, "indices": [2, 3], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 5-6(Stereo)", "command": "input_5_6_stereo", "type": "Gain", "id": 5001, "indices": [4, 5], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 7-8(Stereo)", "command": "input_7_8_stereo", "type": "Gain", "id": 5001, "indices": [6, 7], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 1(Mono)", "command": "input_1_mono", "type": "Gain", "id": 5001, "indices": [0], "min": 0, "max": 74, "default": 0 },
+      { "name": "Input 2(Mono)", "command": "input_2_mono", "type": "Gain", "id": 5001, "indices": [1], "min": 0, "max": 74, "default": 0 },
+      { "name": "Input 3(Mono)", "command": "input_3_mono", "type": "Gain", "id": 5001, "indices": [2], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 4(Mono)", "command": "input_4_mono", "type": "Gain", "id": 5001, "indices": [3], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 5(Mono)", "command": "input_5_mono", "type": "Gain", "id": 5001, "indices": [4], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 6(Mono)", "command": "input_6_mono", "type": "Gain", "id": 5001, "indices": [5], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 7(Mono)", "command": "input_7_mono", "type": "Gain", "id": 5001, "indices": [6], "min": 0, "max": 20, "default": 0 },
+      { "name": "Input 8(Mono)", "command": "input_8_mono", "type": "Gain", "id": 5001, "indices": [7], "min": 0, "max": 20, "default": 0 }
+    ]
+  },
+  {
+    "name": "Main 1-2 Mix",
+    "command": "main_1_2_mix",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [0], "default": -100, "muteId": 1019, "muteIndices": [0] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [1], "default": -100, "muteId": 1019, "muteIndices": [1] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [2], "default": -100, "muteId": 1019, "muteIndices": [2] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [3], "default": -100, "muteId": 1019, "muteIndices": [3] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [4], "default": -100, "muteId": 1019, "muteIndices": [4] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [5], "default": -100, "muteId": 1019, "muteIndices": [5] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [6], "default": -100, "muteId": 1019, "muteIndices": [6] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [7], "default": -100, "muteId": 1019, "muteIndices": [7] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [8], "default": -100, "muteId": 1019, "muteIndices": [8] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [10], "default": -100, "muteId": 1019, "muteIndices": [10] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [11], "default": -100, "muteId": 1019, "muteIndices": [11] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [18], "default": -100, "muteId": 1019, "muteIndices": [18] },
+      { "name": "Reverb", "command": "reverb", "type": "mixvol", "id": 1016, "indices": [30], "default": -100, "muteId": 1019, "muteIndices": [30] },
+      { "name": "Main 1-2", "command": "main_1_2", "type": "mixvol", "id": 1027, "indices": [0], "default": -100, "muteId": 1028, "muteIndices": [0] }
+    ]
+  },
+  {
+    "name": "Phones Mix",
+    "command": "phones_mix",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [64], "default": -100, "muteId": 1019, "muteIndices": [64] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [65], "default": -100, "muteId": 1019, "muteIndices": [65] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [66], "default": -100, "muteId": 1019, "muteIndices": [66] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [67], "default": -100, "muteId": 1019, "muteIndices": [67] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [68], "default": -100, "muteId": 1019, "muteIndices": [68] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [69], "default": -100, "muteId": 1019, "muteIndices": [69] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [70], "default": -100, "muteId": 1019, "muteIndices": [70] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [71], "default": -100, "muteId": 1019, "muteIndices": [71] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [72], "default": -100, "muteId": 1019, "muteIndices": [72] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [74], "default": -100, "muteId": 1019, "muteIndices": [74] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [75], "default": -100, "muteId": 1019, "muteIndices": [75] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [338], "default": -100, "muteId": 1019, "muteIndices": [338] },
+      { "name": "Reverb", "command": "reverb", "type": "mixvol", "id": 1016, "indices": [350], "default": -100, "muteId": 1019, "muteIndices": [350] },
+      { "name": "Master", "command": "master", "type": "mixvol", "id": 1027, "indices": [10], "default": -100, "muteId": 1028, "muteIndices": [10] }
+    ]
+  },
+  {
+    "name": "Line 3-4 Mix",
+    "command": "line_3_4_mix",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [64], "default": -100, "muteId": 1019, "muteIndices": [64] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [65], "default": -100, "muteId": 1019, "muteIndices": [65] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [66], "default": -100, "muteId": 1019, "muteIndices": [66] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [67], "default": -100, "muteId": 1019, "muteIndices": [67] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [68], "default": -100, "muteId": 1019, "muteIndices": [68] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [69], "default": -100, "muteId": 1019, "muteIndices": [69] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [70], "default": -100, "muteId": 1019, "muteIndices": [70] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [71], "default": -100, "muteId": 1019, "muteIndices": [71] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [72], "default": -100, "muteId": 1019, "muteIndices": [72] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [74], "default": -100, "muteId": 1019, "muteIndices": [74] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [75], "default": -100, "muteId": 1019, "muteIndices": [75] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [82], "default": -100, "muteId": 1019, "muteIndices": [82] },
+      { "name": "Reverb", "command": "reverb", "type": "mixvol", "id": 1016, "indices": [94], "default": -100, "muteId": 1019, "muteIndices": [94] },
+      { "name": "Master", "command": "master", "type": "mixvol", "id": 1027, "indices": [2], "default": -100, "muteId": 1028, "muteIndices": [2] }
+    ]
+  },
+  {
+    "name": "Line 5-6 Mix",
+    "command": "line_5_6_mix",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [128], "default": -100, "muteId": 1019, "muteIndices": [128] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [129], "default": -100, "muteId": 1019, "muteIndices": [129] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [130], "default": -100, "muteId": 1019, "muteIndices": [130] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [131], "default": -100, "muteId": 1019, "muteIndices": [131] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [132], "default": -100, "muteId": 1019, "muteIndices": [132] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [133], "default": -100, "muteId": 1019, "muteIndices": [133] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [134], "default": -100, "muteId": 1019, "muteIndices": [134] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [135], "default": -100, "muteId": 1019, "muteIndices": [135] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [136], "default": -100, "muteId": 1019, "muteIndices": [136] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [138], "default": -100, "muteId": 1019, "muteIndices": [138] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [139], "default": -100, "muteId": 1019, "muteIndices": [139] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [146], "default": -100, "muteId": 1019, "muteIndices": [146] },
+      { "name": "Reverb", "command": "reverb", "type": "mixvol", "id": 1016, "indices": [94], "default": -100, "muteId": 1019, "muteIndices": [94] },
+      { "name": "Master", "command": "master", "type": "mixvol", "id": 1027, "indices": [4], "default": -100, "muteId": 1028, "muteIndices": [4] }
+    ]
+  },
+  {
+    "name": "Line 7-8 Mix",
+    "command": "line_7_8_mix",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [192], "default": -100, "muteId": 1019, "muteIndices": [192] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [193], "default": -100, "muteId": 1019, "muteIndices": [193] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [194], "default": -100, "muteId": 1019, "muteIndices": [194] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [195], "default": -100, "muteId": 1019, "muteIndices": [195] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [196], "default": -100, "muteId": 1019, "muteIndices": [196] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [197], "default": -100, "muteId": 1019, "muteIndices": [197] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [198], "default": -100, "muteId": 1019, "muteIndices": [198] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [199], "default": -100, "muteId": 1019, "muteIndices": [199] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [200], "default": -100, "muteId": 1019, "muteIndices": [200] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [202], "default": -100, "muteId": 1019, "muteIndices": [202] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [203], "default": -100, "muteId": 1019, "muteIndices": [203] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [210], "default": -100, "muteId": 1019, "muteIndices": [210] },
+      { "name": "Reverb", "command": "reverb", "type": "mixvol", "id": 1016, "indices": [222], "default": -100, "muteId": 1019, "muteIndices": [222] },
+      { "name": "Master", "command": "master", "type": "mixvol", "id": 1027, "indices": [6], "default": -100, "muteId": 1028, "muteIndices": [6] }
+    ]
+  },
+  {
+    "name": "Line 9-10 Mix",
+    "command": "line_9_10_mix",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [256], "default": -100, "muteId": 1019, "muteIndices": [256] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [257], "default": -100, "muteId": 1019, "muteIndices": [257] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [258], "default": -100, "muteId": 1019, "muteIndices": [258] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [259], "default": -100, "muteId": 1019, "muteIndices": [259] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [260], "default": -100, "muteId": 1019, "muteIndices": [260] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [261], "default": -100, "muteId": 1019, "muteIndices": [261] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [262], "default": -100, "muteId": 1019, "muteIndices": [262] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [263], "default": -100, "muteId": 1019, "muteIndices": [263] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [264], "default": -100, "muteId": 1019, "muteIndices": [264] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [266], "default": -100, "muteId": 1019, "muteIndices": [266] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [267], "default": -100, "muteId": 1019, "muteIndices": [267] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [274], "default": -100, "muteId": 1019, "muteIndices": [274] },
+      { "name": "Reverb", "command": "reverb", "type": "mixvol", "id": 1016, "indices": [286], "default": -100, "muteId": 1019, "muteIndices": [286] },
+      { "name": "Master", "command": "master", "type": "mixvol", "id": 1027, "indices": [8], "default": -100, "muteId": 1028, "muteIndices": [8] }
+    ]
+  },
+  {
+    "name": "Reverb",
+    "command": "reverb",
+    "operations": [
+      { "name": "Mic 1", "command": "mic_1", "type": "mixvol", "id": 1016, "indices": [384], "default": -100, "muteId": 1019, "muteIndices": [384] },
+      { "name": "Mic 2", "command": "mic_2", "type": "mixvol", "id": 1016, "indices": [385], "default": -100, "muteId": 1019, "muteIndices": [385] },
+      { "name": "Line 3", "command": "line_3", "type": "mixvol", "id": 1016, "indices": [386], "default": -100, "muteId": 1019, "muteIndices": [386] },
+      { "name": "Line 4", "command": "line_4", "type": "mixvol", "id": 1016, "indices": [387], "default": -100, "muteId": 1019, "muteIndices": [387] },
+      { "name": "Line 5", "command": "line_5", "type": "mixvol", "id": 1016, "indices": [388], "default": -100, "muteId": 1019, "muteIndices": [388] },
+      { "name": "Line 6", "command": "line_6", "type": "mixvol", "id": 1016, "indices": [389], "default": -100, "muteId": 1019, "muteIndices": [389] },
+      { "name": "Line 7", "command": "line_7", "type": "mixvol", "id": 1016, "indices": [390], "default": -100, "muteId": 1019, "muteIndices": [390] },
+      { "name": "Line 8", "command": "line_8", "type": "mixvol", "id": 1016, "indices": [391], "default": -100, "muteId": 1019, "muteIndices": [391] },
+      { "name": "S/PDIF 1-2", "command": "s_pdif_1_2", "type": "mixvol", "id": 1016, "indices": [392], "default": -100, "muteId": 1019, "muteIndices": [392] },
+      { "name": "TOSlink 1", "command": "toslink_1", "type": "mixvol", "id": 1016, "indices": [394], "default": -100, "muteId": 1019, "muteIndices": [394] },
+      { "name": "TOSlink 2", "command": "toslink_2", "type": "mixvol", "id": 1016, "indices": [395], "default": -100, "muteId": 1019, "muteIndices": [395] },
+      { "name": "USB", "command": "usb", "type": "mixvol", "id": 1016, "indices": [402], "default": -100, "muteId": 1019, "muteIndices": [402] },
+      { "name": "Master", "command": "master", "type": "mixvol", "id": 1027, "indices": [12], "default": -100, "muteId": 1028, "muteIndices": [12] }
+    ]
+  }
+]

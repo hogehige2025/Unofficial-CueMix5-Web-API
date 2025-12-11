@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unofficial CueMix5 Web API</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Unofficial CueMix5 Web API</h1>
+        <form id="command-form">
+            <fieldset id="listening-fieldset" style="display: block;">
+                <legend>Listening</legend>
+                 <div class="form-group">
+                    <div id="active-device-display" class="active-device-display">Active Device : Monitoring</div>
+                </div>
+                <div id="listening-volume-control" class="form-group">
+                    <div class="slider-group">
+                        <input type="range" id="listening-slider" name="listening-value">
+                        <span id="listening-value-display"></span>
+                    </div>
+                </div>
+                <div class="command-buttons">
+                    <button id="listening-down-button" type="button">Down</button>
+                    <button id="listening-switch-button" type="button">Switch</button>
+                    <button id="listening-up-button" type="button">Up</button>
+                </div>
+            </fieldset>
+            
+            <fieldset id="controls-fieldset" style="display: none;">
+                <legend>Controls</legend>
+                <div class="form-group">
+                    <label for="category-select">Category:</label>
+                    <div class="command-container">
+                        <select id="category-select" name="category"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="command-select">Operation:</label>
+                    <div class="command-container">
+                        <select id="command-select" name="commandKey"></select>
+                    </div>
+                </div>
+                <div id="volume-control" class="form-group">
+                    <div class="slider-group">
+                        <input type="range" id="value-slider" name="value">
+                        <span id="value-display"></span>
+                    </div>
+                </div>
+                <div id="toggle-control" class="form-group">
+                    <label for="toggle-switch">State:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-switch">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="command-buttons">
+                    <button id="down-button" type="button">Down</button>
+                    <button id="mute-button" type="button">Mute</button>
+                    <button id="zero-db-button" type="button" style="display: none;">0db</button>
+                    <button id="up-button" type="button">Up</button>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Connection Settings</legend>
+                <div class="form-group">
+                    <label for="motu-ip">IP Address:</label>
+                    <input type="text" id="motu-ip">
+                </div>
+                <div class="connection-grid">
+                    <div class="form-group">
+                        <label for="motu-port">Port:</label>
+                        <input type="number" id="motu-port">
+                    </div>
+                    <div class="form-group">
+                        <label for="motu-sn">Serial Number:</label>
+                        <input type="text" id="motu-sn">
+                    </div>
+                </div>
+                <div class="connection-status-container">
+                    <button id="reconnect-button" type="button">Reconnect MOTU</button>
+                    <div id="motu-ws-status-display">MOTU: Disconnected</div>
+                    <div id="ui-ws-status-display">UI: Disconnected</div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Control URL</legend>
+                <div class="form-group">
+                    <div id="geturl-display" style="word-break: break-all; padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 10px;"></div>
+                    <button id="copy-url-button" type="button">Copy Control URL to Clipboard</button>
+                </div>
+            </fieldset>
+
+            <div id="result"></div>
+        </form>
+    </div>
+    <footer>
+        <p>This application is released under the MIT License.</p>
+        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.</p>
+    </footer>
+    <script src="/js/main.js" defer></script>
+</body>
+</html>

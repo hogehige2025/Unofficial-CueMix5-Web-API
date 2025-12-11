@@ -1,0 +1,8 @@
+{
+  "connectionSettings": {
+    "motuIp": "127.0.0.1",
+    "motuPort": "1281",
+    "motuSn": ""
+  },
+  "listeningPort": 3000
+}
