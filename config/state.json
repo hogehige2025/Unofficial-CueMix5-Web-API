@@ -1,630 +1,648 @@
 {
   "activeOutputDevice": "Monitoring",
   "commands": {
-    "output/monitoring": {
-      "currentValue": -58,
-      "preMuteValue": -58,
-      "isMuted": false
-    },
-    "output/phones": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_1_2_stereo": {
-      "currentValue": 0,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_3_4_stereo": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_5_6_stereo": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_7_8_stereo": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_9_10_stereo": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_1_mono": {
-      "currentValue": 0,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_2_mono": {
-      "currentValue": 0,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_3_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_4_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_5_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_6_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_7_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_8_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "output/output_9_mono": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "input/input_1_2_stereo": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_3_4_stereo": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_5_6_stereo": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_7_8_stereo": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_1_mono": {
-      "currentValue": 50,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_2_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_3_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_4_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_5_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_6_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_7_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "input/input_8_mono": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/mic_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/mic_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/line_3": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/line_4": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/line_5": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/line_6": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/line_7": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/line_8": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/s_pdif_1_2": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/toslink_1": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/toslink_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/usb": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/reverb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "main_1_2_mix/main_1_2": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/mic_1": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/mic_2": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/line_3": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/line_4": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/line_5": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/line_6": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/line_7": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/line_8": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/s_pdif_1_2": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/toslink_1": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/toslink_2": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/usb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/reverb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "phones_mix/master": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/mic_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/mic_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/line_3": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/line_4": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/line_5": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/line_6": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/line_7": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/line_8": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/s_pdif_1_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/toslink_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/toslink_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/usb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/reverb": {
-      "currentValue": 0,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_3_4_mix/master": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/mic_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/mic_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/line_3": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/line_4": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/line_5": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/line_6": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/line_7": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/line_8": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/s_pdif_1_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/toslink_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/toslink_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/usb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/reverb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_5_6_mix/master": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/mic_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/mic_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/line_3": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/line_4": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "line_7_8_mix/line_5": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/line_6": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/line_7": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/line_8": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/s_pdif_1_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/toslink_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/toslink_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/usb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/reverb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_7_8_mix/master": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/mic_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/mic_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/line_3": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/line_4": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/line_5": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/line_6": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/line_7": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/line_8": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/s_pdif_1_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/toslink_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/toslink_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/usb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/reverb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "line_9_10_mix/master": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/mic_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/mic_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/line_3": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/line_4": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/line_5": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/line_6": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/line_7": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/line_8": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/s_pdif_1_2": {
-      "currentValue": -100,
-      "preMuteValue": -100,
-      "isMuted": false
-    },
-    "reverb/toslink_1": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/toslink_2": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/usb": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
-    },
-    "reverb/master": {
-      "currentValue": -100,
-      "preMuteValue": 0,
-      "isMuted": false
+    "output": {
+      "monitoring": {
+        "currentValue": -42,
+        "preMuteValue": -40,
+        "isMuted": false
+      },
+      "phones": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_1_2_stereo": {
+        "currentValue": 0,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_3_4_stereo": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_5_6_stereo": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_7_8_stereo": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_9_10_stereo": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_1_mono": {
+        "currentValue": 0,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_2_mono": {
+        "currentValue": 0,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_3_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_4_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_5_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_6_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_7_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_8_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      },
+      "output_9_mono": {
+        "currentValue": -100,
+        "preMuteValue": -100,
+        "isMuted": false
+      }
+    },
+    "input": {
+      "input_1_2_stereo": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_3_4_stereo": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_5_6_stereo": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_7_8_stereo": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_1_mono": {
+        "currentValue": 50,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_2_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_3_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_4_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_5_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_6_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_7_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "input_8_mono": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "main_1_2_mix": {
+      "mic_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": -0.9,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "reverb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "main_1_2": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "phones_mix": {
+      "mic_1": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "reverb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "master": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "line_3_4_mix": {
+      "mic_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "reverb": {
+        "currentValue": 0,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "master": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "line_5_6_mix": {
+      "mic_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "reverb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "master": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "line_7_8_mix": {
+      "mic_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "reverb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "master": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "line_9_10_mix": {
+      "mic_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "reverb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "master": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
+    },
+    "reverb": {
+      "mic_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "mic_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_3": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_4": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_5": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_6": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_7": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "line_8": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "s_pdif_1_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_1": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "toslink_2": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "usb": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      },
+      "master": {
+        "currentValue": -100,
+        "preMuteValue": 0,
+        "isMuted": false
+      }
     }
   }
 }

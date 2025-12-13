@@ -56,7 +56,6 @@ class ApiRouter extends EventEmitter {
                     contentType = 'text/javascript';
                     break;
                 default:
-                    // This case should ideally not be reached if the initial condition is correct, but as a fallback:
                     res.writeHead(404).end('Not Found');
                     return;
             }
@@ -95,7 +94,6 @@ class ApiRouter extends EventEmitter {
                     const { connection } = JSON.parse(body);
                     const currentSettings = getSettings();
                     
-                    // Only update if the values have actually changed
                     if (connection.ip !== currentSettings.connectionSettings.motuIp ||
                         connection.port !== currentSettings.connectionSettings.motuPort ||
                         connection.sn !== currentSettings.connectionSettings.motuSn) {
@@ -106,15 +104,10 @@ class ApiRouter extends EventEmitter {
                             sn: connection.sn,
                         };
                         
-                        // Update the settings file
                         updateSettingsFile(newConnectionSettings);
-
-                        // Emit event to trigger reconnection in server.js
                         this.emit('reconnect-motu');
-                        
                         res.writeHead(200, { 'Content-Type': 'text/plain' }).end('Settings updated. Reconnecting...');
                     } else {
-                        // If settings are the same, just trigger a reconnect without saving
                         this.emit('reconnect-motu');
                         res.writeHead(200, { 'Content-Type': 'text/plain' }).end('Settings unchanged. Forcing reconnect...');
                     }
@@ -166,12 +159,11 @@ class ApiRouter extends EventEmitter {
         }
     }
 
-    processAndSendCommand(compositeKey, uiValue, res, customId = null, customIndices = null, customLength = null) {
-        const [category, operation] = compositeKey.split('/');
+    processAndSendCommand(category, operation, uiValue, res, customId = null, customIndices = null, customLength = null) {
         const cmd = getCommand(category, operation);
 
         if (!cmd) {
-            if(res) res.writeHead(404, { 'Content-Type': 'text/plain' }).end(`Command not found: ${compositeKey}`);
+            if(res) res.writeHead(404, { 'Content-Type': 'text/plain' }).end(`Command not found: ${category}/${operation}`);
             return;
         }
         
@@ -186,62 +178,66 @@ class ApiRouter extends EventEmitter {
         const targetId = customId || cmd.id;
         const targetIndices = customIndices || cmd.indices;
 
+        // UI互換性のために送信直前に複合キーを生成
+        const compositeKeyForUI = `${category}/${operation}`;
+
         if (targetId !== 0) {
             const hex = targetIndices.map(i => this.createCommand(targetId, i, rawValue, actualLength)).join('');
-            this.emit('send-to-motu', compositeKey, uiValue, rawValue, hex, (msg) => {
+            this.emit('send-to-motu', { category, operation }, uiValue, rawValue, hex, (msg) => {
                 if (res) {
                     if (msg) res.writeHead(200, { 'Content-Type': 'text/plain' }).end(msg);
                     else res.writeHead(500, { 'Content-Type': 'text/plain' }).end('Failed to send command.');
                 }
             });
         }
-        this.emit('broadcast-state', { type: 'SINGLE_STATE_UPDATE', payload: { key: compositeKey, state: { ...getCommand(category, operation) } }});
+        this.emit('broadcast-state', { type: 'SINGLE_STATE_UPDATE', payload: { commandIdentifier: { category, operation }, state: { ...getCommand(category, operation) } }});
     }
 
     handleListeningCommand(muteParam, deltaParam, valueParam, res) {
         if (muteParam === 't') {
             const currentDevRaw = getActiveOutputDevice();
             const newDevRaw = currentDevRaw === 'Monitoring' ? 'Phones' : 'Monitoring';
-            const currentDevComp = `output/${currentDevRaw.toLowerCase()}`;
-            const newDevComp = `output/${newDevRaw.toLowerCase()}`;
             
-            const inactiveCmd = getCommand(currentDevComp.split('/')[0], currentDevComp.split('/')[1]);
-            const activeCmd = getCommand(newDevComp.split('/')[0], newDevComp.split('/')[1]);
+            const currentCategory = 'output';
+            const currentOperation = currentDevRaw.toLowerCase();
+            const newOperation = newDevRaw.toLowerCase();
+            
+            const inactiveCmd = getCommand(currentCategory, currentOperation);
+            const activeCmd = getCommand(currentCategory, newOperation);
 
             if (inactiveCmd && inactiveCmd.currentValue !== inactiveCmd.min) {
-                updateCommandState(currentDevComp, { preMuteValue: inactiveCmd.currentValue, currentValue: inactiveCmd.min });
+                updateCommandState(currentCategory, currentOperation, { preMuteValue: inactiveCmd.currentValue, currentValue: inactiveCmd.min });
             }
             if (activeCmd && activeCmd.currentValue === activeCmd.min) {
-                updateCommandState(newDevComp, { currentValue: activeCmd.preMuteValue });
+                updateCommandState(currentCategory, newOperation, { currentValue: activeCmd.preMuteValue });
             }
             
             setActiveOutputDevice(newDevRaw);
             this.emit('broadcast-state', { type: 'ACTIVE_DEVICE_UPDATE', payload: { activeDevice: newDevRaw } });
 
-            const updatedInactive = getCommand(currentDevComp.split('/')[0], currentDevComp.split('/')[1]);
-            const updatedActive = getCommand(newDevComp.split('/')[0], newDevComp.split('/')[1]);
+            const updatedInactive = getCommand(currentCategory, currentOperation);
+            const updatedActive = getCommand(currentCategory, newOperation);
 
-            this.processAndSendCommand(currentDevComp, updatedInactive.currentValue, null);
-            this.processAndSendCommand(newDevComp, updatedActive.currentValue, res);
+            this.processAndSendCommand(currentCategory, currentOperation, updatedInactive.currentValue, null);
+            this.processAndSendCommand(currentCategory, newOperation, updatedActive.currentValue, res);
             return;
         }
 
         if (deltaParam !== null || valueParam !== null) {
             const activeDevRaw = getActiveOutputDevice();
-            const activeDevComp = `output/${activeDevRaw.toLowerCase()}`;
-            const [cat, op] = activeDevComp.split('/');
-            this.handleGenericCommand(cat, op, null, deltaParam, valueParam, res);
+            const category = 'output';
+            const operation = activeDevRaw.toLowerCase();
+            this.handleGenericCommand(category, operation, null, deltaParam, valueParam, res);
             return;
         }
         if (res) res.writeHead(400, { 'Content-Type': 'text/plain' }).end("Listening op requires 'm=t', 'v', or 'd'.");
     }
 
     handleGenericCommand(categoryCommand, operationCommand, muteParam, deltaParam, valueParam, res) {
-        const compositeKey = `${categoryCommand}/${operationCommand}`;
         const cmd = getCommand(categoryCommand, operationCommand);
 
         if (!cmd) {
-            if (res) res.writeHead(404, { 'Content-Type': 'text/plain' }).end(`Invalid command: ${compositeKey}`);
+            if (res) res.writeHead(404, { 'Content-Type': 'text/plain' }).end(`Invalid command: ${categoryCommand}/${operationCommand}`);
             return;
         }
 
@@ -252,19 +248,19 @@ class ApiRouter extends EventEmitter {
 
             if (shouldMute) {
                 if (cmd.type === 'mixvol') {
-                    updateCommandState(compositeKey, { isMuted: true });
-                    this.processAndSendCommand(compositeKey, 1, res, cmd.muteId, cmd.muteIndices, 1);
+                    updateCommandState(categoryCommand, operationCommand, { isMuted: true });
+                    this.processAndSendCommand(categoryCommand, operationCommand, 1, res, cmd.muteId, cmd.muteIndices, 1);
                 } else {
-                    updateCommandState(compositeKey, { currentValue: cmd.min, preMuteValue: cmd.currentValue });
-                    this.processAndSendCommand(compositeKey, cmd.min, res);
+                    updateCommandState(categoryCommand, operationCommand, { currentValue: cmd.min, preMuteValue: cmd.currentValue });
+                    this.processAndSendCommand(categoryCommand, operationCommand, cmd.min, res);
                 }
             } else if (shouldUnmute) {
                 if (cmd.type === 'mixvol') {
-                    updateCommandState(compositeKey, { isMuted: false });
-                    this.processAndSendCommand(compositeKey, 0, res, cmd.muteId, cmd.muteIndices, 1);
+                    updateCommandState(categoryCommand, operationCommand, { isMuted: false });
+                    this.processAndSendCommand(categoryCommand, operationCommand, 0, res, cmd.muteId, cmd.muteIndices, 1);
                 } else {
-                    updateCommandState(compositeKey, { currentValue: cmd.preMuteValue });
-                    this.processAndSendCommand(compositeKey, cmd.preMuteValue, res);
+                    updateCommandState(categoryCommand, operationCommand, { currentValue: cmd.preMuteValue });
+                    this.processAndSendCommand(categoryCommand, operationCommand, cmd.preMuteValue, res);
                 }
             } else {
                 if (res) res.writeHead(200, { 'Content-Type': 'text/plain' }).end('No state change.');
@@ -282,9 +278,13 @@ class ApiRouter extends EventEmitter {
             const min = cmd.type === 'mixvol' ? -100 : cmd.min;
             const finalUiValue = Math.max(min, Math.min(max, baseValue));
 
-            updateCommandState(compositeKey, { currentValue: finalUiValue, preMuteValue: finalUiValue, isMuted: false });
-            propagateMonoUpdate(compositeKey, finalUiValue);
-            this.processAndSendCommand(compositeKey, finalUiValue, res);
+            // isMuted の新しい値を決定する
+            // mixvol の場合は現在のミュート状態を維持し、それ以外はミュートを解除(false)する
+            const newMuteState = (cmd.type === 'mixvol') ? cmd.isMuted : false;
+
+            updateCommandState(categoryCommand, operationCommand, { currentValue: finalUiValue, preMuteValue: finalUiValue, isMuted: newMuteState });
+            propagateMonoUpdate(categoryCommand, operationCommand, finalUiValue);
+            this.processAndSendCommand(categoryCommand, operationCommand, finalUiValue, res);
             return;
         }
 

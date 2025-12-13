@@ -6,19 +6,26 @@ Japanese(日本語) / [English](README.en.md)
 
 ## 概要
 
-`uo_cm5_webapi`は、MOTU公式アプリケーション「CueMix 5」がデバイスと通信するプロトコルを模倣し、HTTP APIおよびWeb UIを通じてMOTUオーディオインターフェース（例: Ultralite-mk5）を制御するための非公式ツールです。CueMix 5を使用しない古いMOTUデバイスには対応していません。
+**`Unofficial CueMix5 Web API`** は、MOTU公式アプリケーション「CueMix 5」がデバイスと通信するプロトコルを模倣し、HTTP APIおよびWeb UIを通じてMOTUオーディオインターフェース（例: Ultralite-mk5）を制御するための非公式ツールです。
+CueMix 5を使用しない古いMOTUデバイスには対応していません。
 
-![Web UI Screenshot](screenshot.png)
+Web APIサーバーはNode.jsで記述されており、クロスプラットフォーム（Windows, macOS, Linux）で動作します。
+加えて、Windowsユーザー向けに、ボリュームなどのステータス変更をデスクトップにオーバーレイ表示する **Watcher** アプリケーションが同梱されています。
+
+ **本プロジェクトは、GeminiCLIのエージェントの支援を受けて開発されました。**
+
+https://github.com/user-attachments/assets/98319dbc-1e5d-4b5b-8961-0d9d7c642e40
 
 ## 動作確認済み環境
 - OS
   - Windows 11
+  - [.NET 8.0](https://dotnet.microsoft.com/ja-jp/download/dotnet/8.0) (Watcherの動作に必要)
 - デバイス
   - MOTU Ultralite mk5
 
 ## 主な機能
 
-### 制御可能なパラメーター
+### WebAPIから制御可能なパラメーター
 現在、`uo_cm5_webapi`でCueMix 5の以下のパラメーターを制御できます。
 
 -   **Inputページ**
@@ -45,37 +52,64 @@ MOTUデバイスのInput/Outputには本来ミュート機能がありません�
     -   有効になっているリスニング出力（MonitoringまたはPhones）のボリュームをまとめて調整できます。
 
 ## Web UI
+![](resource/webapi_01.png)
 ブラウザから各パラメータを直感的に操作できます。
 
 ## Web API
 すべての操作はシンプルなHTTPリクエストに対応しているため、Stream Deckのような外部デバイスからの制御ができます。
+Web APIのURLは前述のWebUIから簡単に生成することが可能です。
 
-## 使い方 (For Users)
+## Unoffivial CueMix5 Watcher (Windows向け)
+![](resource/watcher_01.png)
+
+![](resource/watcher_02.png)
+
+ Watcherの動作には[.NET 8.0](https://dotnet.microsoft.com/ja-jp/download/dotnet/8.0)が必要です。
+Web APIの状態変更を監視し、デスクトップ上にオーバーレイ表示するアプリケーションです。
+- ボリュームやミュートの状態が変更された際に、デスクトップ中央下部に情報を表示します。
+- システムトレイに常駐し、右クリックメニューからWeb UIを開いたり、アプリケーションを終了したりできます。
+
+## 使い方 (For Windows Users)
+
+
+
+このセクションでは、Windowsユーザー向けの標準的なインストールと使用方法を説明します。
+
+
 
 ### 1. インストール
 
+
+
 1. [ GitHubのリリースページ](https://github.com/hogehige2025/Unofficial-CueMix5-Web-API/releases)から、最新の`uo_cm5_webapi_vX.X.X.zip`ファイルをダウンロードします。
+
 2.  ダウンロードしたzipファイルを、好きな場所に展開（解凍）します。
+
+
 
 展開される主要なファイルとフォルダは以下の通りです。
 
+
+
 |Filename     				|Description									|
 |:--------------------------|:----------------------------------------------|
-|uo_cm5_webapi.exe			|アプリケーション本体							|
+|uo_cm5_webapi.exe			|Web APIサーバー本体							|
 |EnableStartup.bat			|自動起動登録バッチ 							|
 |DisableStartup.bat			|自動起動登録解除バッチ							|
 |SetStartupTask.ps1			|タスクスケジューラ操作用Powershellスクリプト	|
+|uo_cm5_watcher.exe			|ステータス表示用Watcherアプリ					|
+|uo_cm5_watcher.cfg			|Watcherのオーバーレイ表示設定ファイル			|
 |public						|WebUI用ディレクトリ							|
 
 ### 2. 初回起動と自動起動設定
 
-1. 展開したフォルダ内の **`windows/EnableStartup.bat`** ファイルを **右クリックし、「管理者として実行」** を選択します。
-2. このスクリプトによりタスクスケジューラにアプリケーションが登録され、`uo_cm5_webapi.exe`が起動します。
+1. 展開したフォルダ内の **`EnableStartup.bat`** ファイルを **右クリックし、「管理者として実行」** を選択します。
+2. このスクリプトによりタスクスケジューラにアプリケーションが登録され、`WebAPI`および`Watcher`が起動します。
 3. アプリケーションが起動すると、既定のブラウザが自動的に開き、Web UI（`http://localhost:3000`）が表示されます。万が一開かない場合は、手動でアクセスしてください。
 4. Web UIの **「Connection Settings」** セクションで、お使いのMOTUデバイスのIPアドレス、ポート、シリアルナンバーを入力し、「Reconnect MOTU」ボタンをクリックしてください。これにより設定が保存され、MOTUデバイスとの接続が試行されます。
-5. Web UIを閉じてもアプリケーションはバックグラウンドで動作し続け、以降はPCログオン時に`uo_cm5_webapi.exe`が自動的に実行されるようになります。
+5. Web UIを閉じてもアプリケーションはバックグラウンドで動作し続け、以降はPCログオン時に`WebAPI`および`Watcher`が自動的に実行されるようになります。
 
-### 3. アプリケーションの手動実行
+### 3. WebAPIの手動実行
 `uo_cm5_webapi.exe`をダブルクリックして実行します。起動後、ブラウザで`http://localhost:3000`にアクセスするとWeb UIが表示されます。
 
 ### 4. Web API URLの生成と利用
@@ -89,11 +123,13 @@ Web UI上でボリュームなどを操作すると、画面下部の`Control UR
     - `curl "http://localhost:3000/set?c=global&o=listening&v=-31"`
 
 ### 5. アンインストール
-1. 展開したフォルダ内の **`windows/DisableStartup.bat`** ファイルを **右クリックし、「管理者として実行」** を選択します。
-2. このスクリプトにより、実行中の`uo_cm5_webapi.exe`プロセスが停止され、タスクスケジューラから自動起動設定が削除されます。
+1. 展開したフォルダ内の **`DisableStartup.bat`** ファイルを **右クリックし、「管理者として実行」** を選択します。
+2. このスクリプトにより、実行中の`WebAPI`および`Watcher`プロセスが停止され、タスクスケジューラから自動起動設定が削除されます。
 3. 最後に、アプリケーションのフォルダと、必要に応じて設定ファイルが保存されている `%appdata%\uo_cm5_webapi` フォルダを手動で削除してください。
 
-## 開発者向け (For Developers)
+## 開発者向け (For Developers or Other Platforms)
+
+このセクションは、本アプリケーションの開発者、またはWindows以外のOS（macOS, Linuxなど）でWeb APIサーバーのみを実行したいユーザー向けの手順です。
 
 ### セットアップ
 
