@@ -63,32 +63,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = JSON.parse(event.data);
             switch (message.type) {
                 case 'FULL_STATE_UPDATE':
-                    commandCategories = message.payload.commands; // commandCategories を更新
-                    populateCategories(); // Use the new function
+                    commandCategories = message.payload.commands;
+                    populateCategories();
                     updateListeningUI();
                     break;
                 case 'SINGLE_STATE_UPDATE':
-                    const { key: compositeKey, state } = message.payload; // key は複合キー "category/command"
-                    
-                    const [commandCategory, operationCommand] = compositeKey.split('/');
+                    const { commandIdentifier, state } = message.payload;
+                    if (!commandIdentifier) break;
+
+                    const { category: commandCategory, operation: operationCommand } = commandIdentifier;
                     const command = getCommand(commandCategory, operationCommand);
 
                     if (command) {
-                        Object.assign(command, state); // コマンドオブジェクトを直接更新
+                        Object.assign(command, state);
 
-                if (elements.categorySelect.value === commandCategory && elements.commandSelect.value === operationCommand) {
-                    updateUiForCommand(operationCommand, false); // fromUserInput = false
-                }
-                
-                // activeOutputDevice は単一キーなので変換が必要
-                const activeOutputCompositeKey = `output/${activeOutputDevice.toLowerCase()}`;
-                if (compositeKey === activeOutputCompositeKey) { // activeOutputDevice が更新された場合
-                    updateListeningUI();
-                }
+                        if (elements.categorySelect.value === commandCategory && elements.commandSelect.value === operationCommand) {
+                            updateUiForCommand(operationCommand, false);
+                        }
 
-                // Muteボタンの表示も更新 (現在UIで選択されているコマンドの状態を反映)
-                updateMuteButtonState(elements.commandSelect.value);
-            }
+                        const activeOperation = activeOutputDevice.toLowerCase();
+                        if (commandCategory === 'output' && operationCommand === activeOperation) {
+                            updateListeningUI();
+                        }
+
+                        updateMuteButtonState(elements.commandSelect.value);
+                    }
                     break;
                 case 'ACTIVE_DEVICE_UPDATE':
                     activeOutputDevice = message.payload.activeDevice;
@@ -124,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/initial-state');
             const { commands: initialCommands, settings, wsStatus, activeOutputDevice: initialActiveDevice } = await response.json();
-            commands = initialCommands;
+            commandCategories = initialCommands; // Fix: Assign to commandCategories
             activeOutputDevice = initialActiveDevice;
             
             elements.motuIpInput.value = settings.connectionSettings.motuIp;
@@ -137,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.controlsFieldset.disabled = !isMotuConnectedInit;
             elements.listeningFieldset.disabled = !isMotuConnectedInit;
 
-            populateCategories(); // Use the new function
+            populateCategories();
             updateListeningUI(); 
             setupWebSocket();
 

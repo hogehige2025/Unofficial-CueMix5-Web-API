@@ -53,7 +53,6 @@ async function build() {
 
     // 7. Inject blob into the executable
     console.log('Injecting blob into executable...');
-    // Note: npx is used to ensure postject is found
     execSync(`npx postject "${exePath}" NODE_SEA_BLOB "${blobPath}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`, { stdio: 'inherit' });
 
     console.log('Build finished successfully!');
@@ -76,19 +75,40 @@ async function build() {
         fs.copySync(srcPath, destPath);
     });
 
+    // --- uo_cm5_watcherのファイルコピー ---
+    console.log('Copying uo_cm5_watcher files to distribution directory...');
+    const watcherBuildDir = path.join(__dirname, 'windows_watcher', 'UnofficialCueMix5Watcher', 'bin', 'Release', 'net8.0-windows');
+    const watcherFiles = [
+        'uo_cm5_watcher.exe',
+        'uo_cm5_watcher.dll',
+        'uo_cm5_watcher.runtimeconfig.json',
+        'uo_cm5_watcher.deps.json',
+        'uo_cm5_watcher.cfg'
+    ];
+    watcherFiles.forEach(file => {
+        const src = path.join(watcherBuildDir, file);
+        const dest = path.join(distDir, file);
+        if (fs.existsSync(src)) {
+            fs.copySync(src, dest);
+            console.log(`Copied ${file} to ${distDir}`);
+        } else {
+            console.warn(`Warning: ${file} not found at ${src}`);
+        }
+    });
+
     console.log('Distribution package created successfully in "dist" directory!');
 
     // 10. Create release directory
     const releaseDir = path.join(__dirname, 'release');
-    console.log(`Creating release directory at: ${releaseDir}`);
-    fs.emptyDirSync(releaseDir);
+    console.log(`Ensuring release directory exists at: ${releaseDir}`);
+    fs.ensureDirSync(releaseDir);
 
     // 11. Create zip archive
     const zipFileName = `uo_cm5_webapi_v${packageJson.version.replace(/\./g, '_')}.zip`;
     console.log(`Creating zip archive: ${zipFileName}...`);
     const output = fs.createWriteStream(path.join(releaseDir, zipFileName));
     const archive = archiver('zip', {
-        zlib: { level: 9 } // Sets the compression level.
+        zlib: { level: 9 }
     });
 
     return new Promise((resolve, reject) => {
@@ -96,7 +116,6 @@ async function build() {
             console.log(`Archive created successfully. Total size: ${archive.pointer()} bytes`);
             resolve();
         });
-
         archive.on('warning', (err) => {
             if (err.code === 'ENOENT') {
                 console.warn(err);
@@ -104,13 +123,11 @@ async function build() {
                 reject(err);
             }
         });
-        
         archive.on('error', (err) => {
             reject(err);
         });
-
         archive.pipe(output);
-        archive.directory(distDir, false); // Add the 'dist' directory itself to the zip
+        archive.directory(distDir, false);
         archive.finalize();
     });
 

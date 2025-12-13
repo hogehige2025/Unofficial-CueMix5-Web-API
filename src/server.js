@@ -40,8 +40,10 @@ const uiSocketServer = new UiSocketServer(server);
 // --- Event Wiring ---
 
 // Connect API routes to the MOTU client
-apiRouter.on('send-to-motu', (key, uiValue, rawValue, hex, callback) => {
-    const msg = motuClient.send(key, uiValue, rawValue, hex);
+apiRouter.on('send-to-motu', (commandIdentifier, uiValue, rawValue, hex, callback) => {
+    // motuClient.send expects a string for logging purposes
+    const commandName = `${commandIdentifier.category}/${commandIdentifier.operation}`;
+    const msg = motuClient.send(commandName, uiValue, rawValue, hex);
     if (callback) callback(msg);
 });
 
@@ -60,10 +62,10 @@ motuClient.on('status', (message) => {
 });
 
 // Broadcast state changes from MOTU device to all UI clients
-motuClient.on('state-change', ({ command, data }) => {
+motuClient.on('state-change', ({ commandIdentifier, data }) => {
     uiSocketServer.broadcast({
         type: 'SINGLE_STATE_UPDATE',
-        payload: { key: command, state: data }
+        payload: { commandIdentifier: commandIdentifier, state: data }
     });
 });
 

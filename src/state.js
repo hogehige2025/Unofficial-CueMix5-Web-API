@@ -1,10 +1,8 @@
 const fs = require('fs');
 const { commandsJsonPath, stateJsonPath } = require('./config');
 
-// commandCategories は commands.json の配列構造を直接保持する
-let commandCategories = [];
-// commands は categoryCommand/operationCommand をキーとするフラットなオブジェクト（主に互換性のため）
-let commands = {}; 
+// commandMap は { category: { operation: commandObject } } という形式のネストされたマップ
+let commandMap = {};
 // idIndexToCommandMap は "id-index" をキーとし、対応するコマンドオブジェクトを保持する
 let idIndexToCommandMap = {};
 // muteIdIndexToCommandMap は "muteId-muteIndex" をキーとし、対応するコマンドオブジェクトを保持する
@@ -15,41 +13,52 @@ let activeOutputDevice = 'Monitoring'; // Default active output device
 
 // --- Command Definitions & Mapping ---
 try {
-    commandCategories = JSON.parse(fs.readFileSync(commandsJsonPath, 'utf8'));
+    const commandCategories = JSON.parse(fs.readFileSync(commandsJsonPath, 'utf8'));
     console.log(`commands.json loaded from ${commandsJsonPath}`);
-    
-    // commandCategories を走査して commands, idIndexToCommandMap, muteIdIndexToCommandMap を生成
+
     commandCategories.forEach(category => {
-        if (!category.operations) return; // operations がないカテゴリはスキップ
+        if (!category.operations || !category.command) return;
+
+        commandMap[category.command] = {};
+
         category.operations.forEach(cmd => {
-            if (!cmd.command) return; // command プロパティがない場合はスキップ
+            if (!cmd.command) return;
 
-            const compositeKey = `${category.command}/${cmd.command}`; // 例: "output/monitoring"
-            commands[compositeKey] = cmd; // フラットなコマンドリスト
+            // コマンドオブジェクトにカテゴリ情報を付加
+            cmd.category = category.command;
+            cmd.categoryName = category.name; // カテゴリ表示名を追加
 
-            // idIndexToToCommandMap
+            // コマンドの初期化
+            const min = parseFloat(cmd.min);
+            const defaultValue = !isNaN(min) ? min : 0;
+            cmd.id = parseInt(cmd.id, 10);
+            cmd.default = defaultValue;
+            cmd.isMuted = false;
+            cmd.currentValue = defaultValue;
+            cmd.preMuteValue = defaultValue;
+
+            // mixvolタイプにmin/maxを明示的に設定
+            if (cmd.type === 'mixvol') {
+                cmd.min = -100;
+                cmd.max = 12;
+            }
+
+            // マップに格納
+            commandMap[category.command][cmd.command] = cmd;
+
+            // id-index マップの生成
             if (cmd.id !== null && cmd.id !== undefined && Array.isArray(cmd.indices)) {
                 cmd.indices.forEach(index => {
                     idIndexToCommandMap[`${cmd.id}-${index}`] = cmd;
                 });
             }
 
-            // muteIdIndexToCommandMap
+            // muteId-muteIndex マップの生成
             if (cmd.muteId !== null && cmd.muteId !== undefined && Array.isArray(cmd.muteIndices)) {
                 cmd.muteIndices.forEach(muteIndex => {
                     muteIdIndexToCommandMap[`${cmd.muteId}-${muteIndex}`] = cmd;
                 });
             }
-
-            // コマンドの初期化（以前のロジック）
-            const min = parseFloat(cmd.min);
-            const defaultValue = !isNaN(min) ? min : 0; // Ensure default is a number, fallback to 0
-
-            cmd.id = parseInt(cmd.id, 10); // id は常に数値
-            cmd.default = defaultValue;
-            cmd.isMuted = false;
-            cmd.currentValue = defaultValue;
-            cmd.preMuteValue = defaultValue;
         });
     });
 
@@ -64,47 +73,36 @@ try {
         const savedState = JSON.parse(fs.readFileSync(stateJsonPath, 'utf8'));
         console.log(`Loading state from ${stateJsonPath}`);
 
-        // Restore active output device
+        // activeOutputDevice の復元
         if (savedState.activeOutputDevice && typeof savedState.activeOutputDevice === 'string') {
             activeOutputDevice = savedState.activeOutputDevice;
             console.log(`Active output device restored: ${activeOutputDevice}`);
         }
 
-        // Restore command states (now using composite keys for 'commands' global)
-        const savedCommands = savedState.commands || savedState; // savedState.commands は古い形式かもしれない
-        
-        for (const compositeKey in commands) { // commands は新しい複合キーを持つ
-            const cmd = commands[compositeKey]; // 現在のメモリ上のコマンドオブジェクト
-            let savedCmdData = null;
+        // コマンド状態の復元 (ネスト形式)
+        if (savedState.commands && typeof savedState.commands === 'object') {
+            for (const category in savedState.commands) {
+                if (!commandMap[category]) continue;
+                for (const operation in savedState.commands[category]) {
+                    if (!commandMap[category][operation]) continue;
 
-            if (savedCommands[compositeKey]) { // savedCommands に複合キーのエントリがあるか
-                savedCmdData = savedCommands[compositeKey];
-            } else {
-                // 古い state.json フォーマットの場合、単一キーで検索を試みる
-                const parts = compositeKey.split('/');
-                const oldKey = parts[parts.length - 1]; // 複合キーの最後の部分
-                if (savedCommands[oldKey]) {
-                    savedCmdData = savedCommands[oldKey];
+                    const savedCmdData = savedState.commands[category][operation];
+                    const cmd = commandMap[category][operation];
+
+                    if (savedCmdData) {
+                        cmd.isMuted = savedCmdData.isMuted || false;
+                        let currentValue = parseFloat(savedCmdData.currentValue);
+                        if (isNaN(currentValue)) currentValue = cmd.default;
+                        cmd.currentValue = currentValue;
+
+                        let preMuteValue = parseFloat(savedCmdData.preMuteValue);
+                        if (isNaN(preMuteValue)) preMuteValue = cmd.currentValue;
+                        cmd.preMuteValue = preMuteValue;
+                    }
                 }
             }
-            
-            if (savedCmdData) { // saved data が見つかった場合
-                cmd.isMuted = savedCmdData.isMuted || false;
-
-                let currentValue = parseFloat(savedCmdData.currentValue);
-                if (isNaN(currentValue)) {
-                    currentValue = cmd.default;
-                }
-                cmd.currentValue = currentValue;
-                
-                let preMuteValue = parseFloat(savedCmdData.preMuteValue);
-                if (isNaN(preMuteValue)) {
-                    preMuteValue = cmd.currentValue;
-                }
-                cmd.preMuteValue = preMuteValue;
-            }
+            console.log('State successfully restored.');
         }
-        console.log('State successfully restored.');
     }
 } catch (error) {
     console.error('Error loading state file. Continuing with default values.', error.message);
@@ -112,15 +110,10 @@ try {
 
 // --- State Saving on Exit ---
 function debouncedSave() {
-    // Clear any existing timer
-    if (saveTimeout) {
-        clearTimeout(saveTimeout);
-    }
-
-    // Set a new timer
+    if (saveTimeout) clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
         saveState();
-        saveTimeout = null; // Clear timer ID after execution
+        saveTimeout = null;
     }, 10000); // 10秒
 }
 
@@ -129,16 +122,21 @@ function saveState() {
         activeOutputDevice: activeOutputDevice,
         commands: {}
     };
-    for (const compositeKey in commands) {
-        const cmd = commands[compositeKey];
-        if (cmd.id !== undefined && cmd.id !== null) { // 有効なコマンドのみ保存
-            stateToSave.commands[compositeKey] = {
-                currentValue: cmd.currentValue,
-                preMuteValue: cmd.preMuteValue,
-                isMuted: cmd.isMuted
-            };
+
+    for (const category in commandMap) {
+        stateToSave.commands[category] = {};
+        for (const operation in commandMap[category]) {
+            const cmd = commandMap[category][operation];
+            if (cmd.id !== undefined && cmd.id !== null) {
+                stateToSave.commands[category][operation] = {
+                    currentValue: cmd.currentValue,
+                    preMuteValue: cmd.preMuteValue,
+                    isMuted: cmd.isMuted
+                };
+            }
         }
     }
+
     try {
         fs.writeFileSync(stateJsonPath, JSON.stringify(stateToSave, null, 2), 'utf8');
         console.log(`Current state saved to ${stateJsonPath}`);
@@ -147,61 +145,53 @@ function saveState() {
     }
 }
 
+// UIへの後方互換性のために、元の配列構造を動的に生成して返す
 function getCommandCategories() {
-    return commandCategories;
+    // この関数はUIの初期表示にのみ使われるため、毎回生成してもパフォーマンス影響は少ない
+    const categories = [];
+    const originalCommands = JSON.parse(fs.readFileSync(commandsJsonPath, 'utf8'));
+
+    originalCommands.forEach(category => {
+        const newCategory = { ...category, operations: [] };
+        if (category.operations) {
+            category.operations.forEach(op => {
+                const liveCommand = getCommand(category.command, op.command);
+                if (liveCommand) {
+                    newCategory.operations.push(liveCommand);
+                }
+            });
+        }
+        categories.push(newCategory);
+    });
+    return categories;
 }
 
 // --- Functions for Command Access ---
 
 function getCommand(categoryCommand, operationCommand) {
-    const category = commandCategories.find(cat => cat.command === categoryCommand);
-    if (category) {
-        return category.operations.find(op => op.command === operationCommand);
-    }
-    return undefined;
+    return commandMap[categoryCommand]?.[operationCommand];
 }
 
 function getCommandByIdIndex(id, index) {
-    return idIndexToCommandMap[`${id}-${index}`]; // idIndexToCommandMap はコマンドオブジェクトを直接持つ
+    return idIndexToCommandMap[`${id}-${index}`];
 }
 
-
-
-function getCommandCategoryAndName(commandObject) {
-    for (const category of commandCategories) {
-        for (const op of category.operations) {
-            if (op === commandObject) {
-                return { category: category.command, name: op.command, displayName: `${category.name}/${op.name}` };
-            }
-        }
-    }
-    return null; // 見つからない場合
-}
-
-function getCommandKeyByMuteIdIndex(muteId, muteIndex) {
+function getCommandInfoByMuteIdIndex(muteId, muteIndex) {
     const commandObject = muteIdIndexToCommandMap[`${muteId}-${muteIndex}`];
     if (commandObject) {
-        // コマンドオブジェクトから複合キーを再構築して返す
-        for (const category of commandCategories) {
-            for (const op of category.operations) {
-                if (op === commandObject) {
-                    return `${category.command}/${op.command}`;
-                }
-            }
-        }
+        return { category: commandObject.category, operation: commandObject.command };
     }
     return null;
 }
 
-function updateCommandState(compositeKey, newValues) {
-    const [categoryCommand, operationCommand] = compositeKey.split('/');
+function updateCommandState(categoryCommand, operationCommand, newValues) {
     const commandObject = getCommand(categoryCommand, operationCommand);
-    
+
     if (commandObject) {
         Object.assign(commandObject, newValues);
-        debouncedSave(); // 10秒後に保存するようスケジュール
+        debouncedSave();
     } else {
-        console.error(`[STATE] Attempted to update non-existent command: ${compositeKey}`);
+        console.error(`[STATE] Attempted to update non-existent command: ${categoryCommand}/${operationCommand}`);
     }
 }
 
@@ -211,9 +201,9 @@ function getActiveOutputDevice() {
 
 function setActiveOutputDevice(device) {
     if (['Monitoring', 'Phones'].includes(device)) {
-        if (activeOutputDevice !== device) { // 変更があった場合のみ保存
+        if (activeOutputDevice !== device) {
             activeOutputDevice = device;
-            debouncedSave(); // 10秒後に保存するようスケジュール
+            debouncedSave();
         }
     } else {
         console.error(`Attempted to set invalid active output device: ${device}`);
@@ -221,134 +211,36 @@ function setActiveOutputDevice(device) {
 }
 
 function setupExitHandlers() {
-
-    // Flag to prevent multiple save attempts
-
     let isExiting = false;
-
-
-
     function handleExit(options, exitCode) {
-
-        // Prevent re-entry
-
         if (isExiting) return;
-
         isExiting = true;
-
-        
-
-        // If a debounced save is pending, cancel it. We will save synchronously.
-
-        if (saveTimeout) {
-
-            clearTimeout(saveTimeout);
-
-        }
-
-
-
+        if (saveTimeout) clearTimeout(saveTimeout);
         if (options.cleanup) {
-
             console.log('Saving state before exit...');
-
             saveState();
-
         }
-
         if (exitCode || exitCode === 0) console.log(`Exit Code: ${exitCode}`);
-
-        
-
         if (options.exit) {
-
-            // Give a short moment for async operations if any, although saveState is sync
-
-            setTimeout(() => process.exit(), 100); 
-
+            setTimeout(() => process.exit(), 100);
         }
-
     }
-
-
-
-    process.on('exit', (code) => {
-
-        // 'exit' は最後の砦。ここでは cleanup のみ行う
-
-        handleExit({ cleanup: true }, code);
-
-    });
-
-
-
-    process.on('SIGINT', () => {
-
-        handleExit({ cleanup: true, exit: true }, 0);
-
-    });
-
-
-
-    process.on('SIGTERM', () => {
-
-        handleExit({ cleanup: true, exit: true }, 0);
-
-    });
-
-
-
-    // Windows specific handlers
-
+    process.on('exit', (code) => handleExit({ cleanup: true }, code));
+    process.on('SIGINT', () => handleExit({ cleanup: true, exit: true }, 0));
+    process.on('SIGTERM', () => handleExit({ cleanup: true, exit: true }, 0));
     if (process.platform === "win32") {
-
-        process.on('SIGHUP', () => {
-
-            handleExit({ cleanup: true, exit: true }, 0);
-
-        });
-
-
-
-        const rl = require("readline").createInterface({
-
-            input: process.stdin,
-
-            output: process.stdout
-
-        });
-
-
-
-        rl.on("close", function() {
-
-            console.log("Windows console is closing, saving state...");
-
-            // 直接 saveState を呼ぶのではなく、標準の exit ハンドラに任せる
-
-            handleExit({ cleanup: true, exit: true }, 0);
-
-        });
-
+        process.on('SIGHUP', () => handleExit({ cleanup: true, exit: true }, 0));
+        const rl = require("readline").createInterface({ input: process.stdin, output: process.stdout });
+        rl.on("close", () => handleExit({ cleanup: true, exit: true }, 0));
     }
-
-
-
     process.on('uncaughtException', (err) => {
-
         console.error('Uncaught Exception:', err);
-
-        // handleExit を呼んで重複実行を防ぐ
-
         handleExit({ cleanup: true, exit: true }, 1);
-
     });
-
 }
 
 // --- Mono -> Stereo Propagation ---
-function propagateMonoUpdate(compositeKey, newValue) {
-    const [categoryCommand, operationCommand] = compositeKey.split('/');
+function propagateMonoUpdate(categoryCommand, operationCommand, newValue) {
     const updatedCommand = getCommand(categoryCommand, operationCommand);
 
     if (!updatedCommand || !updatedCommand.indices || updatedCommand.indices.length !== 1) {
@@ -357,18 +249,14 @@ function propagateMonoUpdate(compositeKey, newValue) {
     const monoIndex = updatedCommand.indices[0];
     const commandId = updatedCommand.id;
 
-    // commandCategories を走査して関連するコマンドを探す
-    for (const category of commandCategories) {
-        for (const op of category.operations) {
-            if (op === updatedCommand) continue; // 自身はスキップ
-            
-            // 同じIDで、インデックスを共有し、ステレオであるもの
-            if (op.id === commandId &&
-                op.indices && op.indices.length > 1 &&
-                op.indices.includes(monoIndex)) {
-                // updateCommandState を使って更新
-                const opCompositeKey = `${category.command}/${op.command}`;
-                updateCommandState(opCompositeKey, { currentValue: newValue });
+    // commandMap を走査して関連するコマンドを探す
+    for (const categoryKey in commandMap) {
+        for (const opKey in commandMap[categoryKey]) {
+            const op = commandMap[categoryKey][opKey];
+            if (op === updatedCommand) continue;
+
+            if (op.id === commandId && op.indices && op.indices.length > 1 && op.indices.includes(monoIndex)) {
+                updateCommandState(op.category, op.command, { currentValue: newValue });
             }
         }
     }
@@ -376,10 +264,9 @@ function propagateMonoUpdate(compositeKey, newValue) {
 
 module.exports = {
     getCommandCategories,
-    getCommand, // getCommandByKey の代わりに getCommand をエクスポート
+    getCommand,
     getCommandByIdIndex,
-    getCommandCategoryAndName,
-    getCommandKeyByMuteIdIndex,
+    getCommandInfoByMuteIdIndex,
     updateCommandState,
     setupExitHandlers,
     propagateMonoUpdate,

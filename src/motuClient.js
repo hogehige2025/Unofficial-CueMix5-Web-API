@@ -1,8 +1,8 @@
 const WebSocket = require('ws');
 const EventEmitter = require('events');
 const { getSettings } = require('./config');
-const { getCommandByIdIndex, propagateMonoUpdate, getCommandCategoryAndName, updateCommandState, getCommandKeyByMuteIdIndex, getCommand } = require('./state');
-const { hexToDb } = require('./converters'); // api.js から converters.js に変更
+const { getCommandByIdIndex, propagateMonoUpdate, updateCommandState, getCommandInfoByMuteIdIndex, getCommand } = require('./state');
+const { hexToDb } = require('./converters');
 
 class MotuClient extends EventEmitter {
     constructor() {
@@ -16,7 +16,6 @@ class MotuClient extends EventEmitter {
     }
 
     showConnectionFailureMessage() {
-        // Avoid showing the message multiple times
         if (this.didShowFailureMessage) return;
         this.didShowFailureMessage = true;
 
@@ -37,11 +36,11 @@ class MotuClient extends EventEmitter {
 
         if (this.retryCount >= this.maxRetries) {
             this.showConnectionFailureMessage();
-            return; // Stop retrying
+            return;
         }
         
         this.retryCount++;
-        this.didShowFailureMessage = false; // Reset message flag on new attempt
+        this.didShowFailureMessage = false;
 
         const { connectionSettings } = getSettings();
         const { motuIp, motuPort, motuSn } = connectionSettings;
@@ -49,7 +48,6 @@ class MotuClient extends EventEmitter {
         if (!motuIp || !motuPort) {
             this.emit('status', 'Connection settings incomplete.');
             console.log('Cannot connect to MOTU: Connection settings are not fully configured.');
-            // Don't count this as a retry, as it's a configuration issue
             this.retryCount--; 
             return;
         }
@@ -66,7 +64,7 @@ class MotuClient extends EventEmitter {
             this.emit('status', `Connected to ${motuIp}:${motuPort}.`);
             console.log(`WebSocket connection to MOTU at ${wsUrl} established.`);
             this.isReconnecting = false;
-            this.retryCount = 0; // Reset retry count on successful connection
+            this.retryCount = 0;
         });
 
         this.ws.on('message', (data) => {
@@ -78,33 +76,26 @@ class MotuClient extends EventEmitter {
             const receivedId = parseInt(idHex, 16);
             const receivedIndex = parseInt(indexHex, 16);
 
-            // ★★★ ミュートコマンドの処理を追加 ★★★
-            const muteCommandKey = getCommandKeyByMuteIdIndex(receivedId, receivedIndex); // これは複合キーを返す
-            if (muteCommandKey) {
-                const isMuted = parseInt(valueHex, 16) === 1; // 1ならミュート
-                updateCommandState(muteCommandKey, { isMuted: isMuted }); // isMuted を更新
+            // Mute command processing
+            const muteCommandInfo = getCommandInfoByMuteIdIndex(receivedId, receivedIndex);
+            if (muteCommandInfo) {
+                const { category, operation } = muteCommandInfo;
+                const isMuted = parseInt(valueHex, 16) === 1;
+                updateCommandState(category, operation, { isMuted: isMuted });
                 
-                const [categoryCommand, operationCommand] = muteCommandKey.split('/');
-                const commandInfo = getCommandCategoryAndName(getCommand(categoryCommand, operationCommand)); // 複合キーからコマンドオブジェクトを取得してカテゴリ名取得
-                const formattedCommandName = commandInfo ? `${commandInfo.displayName}` : 'Unknown Mute Command';
-                console.log(`Mute state updated from device: ${formattedCommandName} = ${isMuted ? 'Muted' : 'Unmuted'}(${receivedHex})`);
+                const commandForLog = getCommand(category, operation);
+                console.log(`Mute state updated from device: ${commandForLog.name} = ${isMuted ? 'Muted' : 'Unmuted'} (${receivedHex})`);
                 
-                // UIに状態変化をブロードキャストする
-                this.emit('state-change', { command: muteCommandKey, data: getCommand(categoryCommand, operationCommand) });
-                return; // ミュートコマンドの場合はここで処理を終了
+                this.emit('state-change', { commandIdentifier: { category, operation }, data: getCommand(category, operation) });
+                return;
             }
 
-            // 通常のボリュームコマンドの処理
-            const targetCommand = getCommandByIdIndex(receivedId, receivedIndex); // これはコマンドオブジェクトを返す
-
+            // Normal volume command processing
+            const targetCommand = getCommandByIdIndex(receivedId, receivedIndex);
             if (targetCommand) {
-                const commandInfo = getCommandCategoryAndName(targetCommand); // カテゴリと名前を取得
-                if (!commandInfo) return;
+                const { category, command: operation } = targetCommand; // Get category and operation from the command object
 
-                const actualCommandKey = `${commandInfo.category}/${commandInfo.name}`; // 実際のコマンドキー (複合キー)
-                const formattedCommandName = commandInfo.displayName;
-
-                const rawValue = parseInt(valueHex, 16); // デバイスから受信した生の16進数値 (10進数表現)
+                const rawValue = parseInt(valueHex, 16);
 
                 let shouldProcess = true;
                 if (targetCommand.indices && targetCommand.indices.length > 1 && receivedIndex !== targetCommand.indices[0]) {
@@ -114,23 +105,19 @@ class MotuClient extends EventEmitter {
                 if (shouldProcess) {
                     let uiValue;
                     if (targetCommand.type === 'mixvol') {
-                        uiValue = hexToDb(rawValue); // 16進数 -> dB値に変換
+                        uiValue = hexToDb(rawValue);
                     } else if (targetCommand.type === 'Trim') {
-                        uiValue = -rawValue; // Trimは負の値
-                    } else { // Gain, Toggle
+                        uiValue = -rawValue;
+                    } else {
                         uiValue = rawValue;
                     }
 
-                    // updateCommandState を使って状態を更新
-                    updateCommandState(actualCommandKey, { currentValue: uiValue });
-
-                    console.log(`State updated from device   : ${formattedCommandName} = ${uiValue}(${receivedHex})`);
+                    updateCommandState(category, operation, { currentValue: uiValue });
+                    console.log(`State updated from device   : ${targetCommand.name} = ${uiValue} (${receivedHex})`);
                     
-                    propagateMonoUpdate(actualCommandKey, uiValue);
+                    propagateMonoUpdate(category, operation, uiValue);
                     
-                    // 再取得したオブジェクトのコピーを emit する
-                    const [cat, op] = actualCommandKey.split('/');
-                    this.emit('state-change', { command: actualCommandKey, data: { ...getCommand(cat, op) } });
+                    this.emit('state-change', { commandIdentifier: { category, operation }, data: { ...getCommand(category, operation) } });
                 }
             }
         });
@@ -152,12 +139,13 @@ class MotuClient extends EventEmitter {
         });
     }
 
-    send(commandName, uiValue, rawValue, commandHex) {
+    send(commandIdentifier, uiValue, rawValue, commandHex) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             try {
                 const buffer = Buffer.from(commandHex, 'hex');
                 this.ws.send(buffer);
-                const logMessage = `State send to device        : ${commandName} = ${uiValue}(${commandHex})`;
+                // commandIdentifier can be a string for logging now
+                const logMessage = `State send to device        : ${commandIdentifier} = ${uiValue}(${commandHex})`;
                 console.log(logMessage);
                 return logMessage;
             } catch (error) {
@@ -179,7 +167,7 @@ class MotuClient extends EventEmitter {
         this.emit('status', 'Reconnecting due to settings change...');
         console.log('Settings changed. Forcing MOTU reconnection...');
         
-        this.retryCount = 0; // Reset retry count for manual reconnect
+        this.retryCount = 0;
 
         if (this.ws) {
             this.ws.removeAllListeners('close');
