@@ -157,7 +157,14 @@ npm run build
 
 ## MOTUデバイス メッセージフォーマット
 
-本アプリケーションからMOTUデバイスへ送信されるメッセージは、特定の16進文字列フォーマットでWebSocket経由で送信されます。
+![](resource/diagram.png)
+
+公式のCueMix5クライアントは、バックグラウンドで起動しているサービス(`MOTUGen5WebSocketProxy`)と通信しています。
+`MOTUGen5WebSocketProxy`はHTTP WebSocket　`ws://localhost:1281/<Device Serial Number>`　で待ち受けています。
+Unofficial CueMix5 WebAPIサーバはこの通信を模倣し、`MOTUGen5WebSocketProxy`と通信することで、MOTUデバイスを制御しています。
+
+なお、発売初期のUltralite-mk5では`MOTUGen5WebSocketProxy`は存在せず、デバイスがUSB NICとしてPCに認識されることで、`1280/TCP`ポートを介して直接TCP/IP通信が可能でした。後のファームウェアアップデートでこの仕様は変更され、現在は`MOTUGen5WebSocketProxy`がデバイスとの通信を中継する方式となっています。
+
 本アプリケーションでは`commands.json`内に定義されています。
 
 ### 送信フォーマット
@@ -250,6 +257,10 @@ WebSocket接続時に全てのパラメータがMOTUデバイスから送信さ�
         -   `value` (number, optional): 設定したい絶対値。例: `{"value": -10}`
         -   `mute` (string, optional): ミュート操作。`"t"` (トグル), `"0"` (ミュート解除), `"1"` (ミュート)。例: `{"mute": "t"}`
         -   `delta` と `value` は排他的です。`mute` と同時に使用できます。
+
+## 謝辞 (Acknowledgements)
+
+本プロジェクトの初期開発において、MOTUデバイスとの通信プロトコル解析に際し、[m1no氏](https://github.com/m1no)が公開されている[コード](https://gist.github.com/m1no/90c5776df3f1c06e067076d14477ef43)は大変参考になりました。ここに感謝の意を表します。
 
 ## ライセンス
 

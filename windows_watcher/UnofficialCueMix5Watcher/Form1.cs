@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Text;
@@ -26,6 +27,7 @@ namespace UnofficialCueMix5Watcher
         private ToolStripMenuItem _openWebUiMenuItem;
         private volatile bool _isConnecting = false;
         private readonly object _connectionLock = new object();
+        private string _apiVersion = "?.?.?"; // 初期値
 
         public Form1()
         {
@@ -39,6 +41,7 @@ namespace UnofficialCueMix5Watcher
             _overlayForm.Hide();
             _cts = new CancellationTokenSource();
             _ = ConnectWebSocketAsync(_cts.Token);
+            _ = FetchVersionAndUpdateTooltip();
         }
 
         private void UpdateStatus(string status)
@@ -55,12 +58,44 @@ namespace UnofficialCueMix5Watcher
             _openWebUiMenuItem.Enabled = isConnected;
 
             // Update tooltip text
-            string tooltipText = $"Unofficial CueMix5 Watcher\nStatus: {status}";
+            string tooltipText = $"Unofficial CueMix5 Watcher v{_apiVersion}\nStatus: {status}";
             if (tooltipText.Length > 63)
             {
                 tooltipText = tooltipText.Substring(0, 63);
             }
             notifyIcon.Text = tooltipText;
+        }
+
+        private async Task FetchVersionAndUpdateTooltip()
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    // タイムアウトを設定
+                    httpClient.Timeout = TimeSpan.FromSeconds(5);
+                    var response = await httpClient.GetStringAsync($"http://localhost:{_port}/api/version");
+                    using (JsonDocument doc = JsonDocument.Parse(response))
+                    {
+                        if (doc.RootElement.TryGetProperty("version", out JsonElement versionElement))
+                        {
+                            _apiVersion = versionElement.GetString();
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // エラーは無視。_apiVersionは初期値のままとなる
+            }
+            finally
+            {
+                // 現在のステータスでツールチップを再更新
+                if (_statusMenuItem != null)
+                {
+                    UpdateStatus(_statusMenuItem.Text.Replace("Status: ", ""));
+                }
+            }
         }
 
         private void SetupNotifyIcon()

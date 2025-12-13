@@ -9,6 +9,7 @@ const EventEmitter = require('events');
 class ApiRouter extends EventEmitter {
     constructor() {
         super();
+        this.version = require('../package.json').version;
         this.currentWsStatusMessage = 'WebSocket: Not Connected.';
 
         // Determine public directory based on execution context
@@ -84,6 +85,9 @@ class ApiRouter extends EventEmitter {
                 wsStatus: this.currentWsStatusMessage,
                 activeOutputDevice: getActiveOutputDevice() 
             }));
+        } else if (pathname === '/api/version' && req.method === 'GET') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ version: this.version }));
         } else if (pathname === '/api/reconnect' && req.method === 'POST') {
             let body = '';
             req.on('data', chunk => {

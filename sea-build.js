@@ -67,6 +67,8 @@ async function build() {
     console.log('Copying files to distribution directory...');
     fs.copySync(exePath, path.join(distDir, exeName));
     fs.copySync(path.join(buildDir, 'public'), path.join(distDir, 'public'));
+    fs.copySync(path.join(__dirname, 'README.md'), path.join(distDir, 'README.md'));
+    fs.copySync(path.join(__dirname, 'README.en.md'), path.join(distDir, 'README.en.md'));
     
     // Copy contents of 'windows' directory to 'dist' directory
     fs.readdirSync(path.join(__dirname, 'windows')).forEach(file => {

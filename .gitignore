@@ -19,3 +19,4 @@ config/state.json
 *.sublime-workspace
 .DS_Store
 Thumbs.db
+build.bat

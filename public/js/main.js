@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         geturlDisplay: document.getElementById('geturl-display'),
         copyUrlButton: document.getElementById('copy-url-button'),
         listeningFieldset: document.getElementById('listening-fieldset'),
+        appVersion: document.getElementById('app-version'),
     };
 
     // --- Global State ---
@@ -121,8 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function initializeApp() {
         try {
-            const response = await fetch('/api/initial-state');
-            const { commands: initialCommands, settings, wsStatus, activeOutputDevice: initialActiveDevice } = await response.json();
+            const [initialStateResponse, versionResponse] = await Promise.all([
+                fetch('/api/initial-state'),
+                fetch('/api/version')
+            ]);
+
+            const { commands: initialCommands, settings, wsStatus, activeOutputDevice: initialActiveDevice } = await initialStateResponse.json();
+            const { version } = await versionResponse.json();
+            
             commandCategories = initialCommands; // Fix: Assign to commandCategories
             activeOutputDevice = initialActiveDevice;
             
@@ -135,6 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.motuWsStatusDisplay.style.color = isMotuConnectedInit ? 'green' : 'red';
             elements.controlsFieldset.disabled = !isMotuConnectedInit;
             elements.listeningFieldset.disabled = !isMotuConnectedInit;
+
+            elements.appVersion.textContent = `v${version}`; // ここでバージョンを設定
 
             populateCategories();
             updateListeningUI(); 
