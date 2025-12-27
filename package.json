@@ -1,6 +1,6 @@
 {
   "name": "unofficial-cuemix5-web-api",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Unofficial CueMix5 Web API",
   "main": "src/server.js",
   "bin": "src/server.js",

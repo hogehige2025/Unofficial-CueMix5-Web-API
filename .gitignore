@@ -20,3 +20,8 @@ config/state.json
 .DS_Store
 Thumbs.db
 build.bat
+.temp
+.temp/
+
+1_build.bat
+2_merge.bat

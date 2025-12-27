@@ -53,6 +53,18 @@ if (-not (Check-Admin)) { pause; return }
 
 # --- Enable Mode ---
 if ($Mode -eq 'Enable') {
+    Write-Host-Color "`n--- Cleaning up old commands.json ---" -Color Cyan
+    $commandsJsonPath = Join-Path $AppDataConfigPath "commands.json"
+    if (Test-Path $commandsJsonPath) {
+        try {
+            Remove-Item $commandsJsonPath -Force
+            Write-Host-Color "  -> Success: Removed '$commandsJsonPath'." -Color Green
+        } catch {
+            Write-Host-Color "  -> ERROR: Failed to remove '$commandsJsonPath'. Error: $_" -Color Red
+        }
+    } else {
+        Write-Host-Color "  -> '$commandsJsonPath' does not exist. Skipping removal." -Color Yellow
+    }
     
     foreach ($app in $Applications) {
         Write-Host-Color "`n--- Register task: $($app.TaskName) ---" -Color Cyan

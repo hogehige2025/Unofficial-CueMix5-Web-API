@@ -27,7 +27,7 @@
      showguides="false"
      inkscape:export-bgcolor="#ffffffff"
      inkscape:zoom="0.25"
-     inkscape:cx="2334"
+     inkscape:cx="1514"
      inkscape:cy="194"
      inkscape:window-width="2560"
      inkscape:window-height="1369"
@@ -145,7 +145,10 @@
      inkscape:export-ydpi="27.858786"><g
        id="g12"
        transform="translate(-3.996631,75.862312)"
-       style="stroke-width:5;stroke-dasharray:none"><rect
+       style="stroke-width:5;stroke-dasharray:none"
+       inkscape:export-filename="diagram.png"
+       inkscape:export-xdpi="27.858786"
+       inkscape:export-ydpi="27.858786"><rect
          style="fill:#ffffff;stroke:#000000;stroke-width:5;stroke-linejoin:round;stroke-dasharray:none;paint-order:stroke markers fill"
          id="rect12"
          width="188.46002"
