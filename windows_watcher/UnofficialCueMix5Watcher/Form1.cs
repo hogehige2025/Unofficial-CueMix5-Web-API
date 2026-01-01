@@ -1,258 +1,64 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
-using System.Net.WebSockets;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UnofficialCueMix5Watcher.Forms;
 
 namespace UnofficialCueMix5Watcher
 {
     public partial class Form1 : Form
     {
-        private NotifyIcon notifyIcon;
-        private ClientWebSocket _webSocket;
-        private CancellationTokenSource _cts;
-        private string _websocketUrl;
+        private NotifyIcon _notifyIcon = null!;
+        private WebSocketClient _webSocketClient = null!;
+        private string _websocketUrl = null!;
         private int _port = 3000; // Default port
-        private OverlayForm _overlayForm;
-        private ToolStripMenuItem _statusMenuItem;
-        private ToolStripMenuItem _reconnectMenuItem;
-        private ToolStripMenuItem _openWebUiMenuItem;
-        private volatile bool _isConnecting = false;
-        private readonly object _connectionLock = new object();
-        private string _apiVersion = "?.?.?"; // 初期値
+        private OverlayForm _overlayForm = null!;
+        private ToolStripMenuItem _statusMenuItem = null!;
+        private ToolStripMenuItem _reconnectMenuItem = null!;
+        private ToolStripMenuItem _openWebUiMenuItem = null!;
+        private ToolStripMenuItem _overlayEnabledMenuItem = null!;
+        private bool _isSettingsFormOpen = false;
+        private string _apiVersion = "?.?.?";
+        private WatcherSettings _settings = null!;
 
         public Form1()
         {
             InitializeComponent();
-            LoadConfiguration();
+            LoadAppSettings();
+
             this.Load += Form1_Load;
             this.FormClosed += Form1_FormClosed;
+            
+            SetupWebSocketClient();
             SetupNotifyIcon();
             _overlayForm = new OverlayForm();
-            _overlayForm.Show();
-            _overlayForm.Hide();
-            _cts = new CancellationTokenSource();
-            _ = ConnectWebSocketAsync(_cts.Token);
+            ApplyOverlaySettings(); 
+
+            _ = _webSocketClient.ConnectAsync();
             _ = FetchVersionAndUpdateTooltip();
         }
-
-        private void UpdateStatus(string status)
+        
+        private void SetupWebSocketClient()
         {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() => UpdateStatus(status)));
-                return;
-            }
-
-            bool isConnected = status == "Connected";
-            _statusMenuItem.Text = $"Status: {status}";
-            _reconnectMenuItem.Enabled = !isConnected;
-            _openWebUiMenuItem.Enabled = isConnected;
-
-            // Update tooltip text
-            string tooltipText = $"Unofficial CueMix5 Watcher v{_apiVersion}\nStatus: {status}";
-            if (tooltipText.Length > 63)
-            {
-                tooltipText = tooltipText.Substring(0, 63);
-            }
-            notifyIcon.Text = tooltipText;
-        }
-
-        private async Task FetchVersionAndUpdateTooltip()
-        {
-            try
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    // タイムアウトを設定
-                    httpClient.Timeout = TimeSpan.FromSeconds(5);
-                    var response = await httpClient.GetStringAsync($"http://localhost:{_port}/api/version");
-                    using (JsonDocument doc = JsonDocument.Parse(response))
-                    {
-                        if (doc.RootElement.TryGetProperty("version", out JsonElement versionElement))
-                        {
-                            _apiVersion = versionElement.GetString();
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // エラーは無視。_apiVersionは初期値のままとなる
-            }
-            finally
-            {
-                // 現在のステータスでツールチップを再更新
-                if (_statusMenuItem != null)
-                {
-                    UpdateStatus(_statusMenuItem.Text.Replace("Status: ", ""));
-                }
-            }
-        }
-
-        private void SetupNotifyIcon()
-        {
-            notifyIcon = new NotifyIcon();
-            try
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                using (var stream = assembly.GetManifestResourceStream("UnofficialCueMix5Watcher.icon_watcher.ico"))
-                {
-                    if (stream != null)
-                    {
-                        notifyIcon.Icon = new Icon(stream);
-                    }
-                    else
-                    {
-                        notifyIcon.Icon = SystemIcons.Application;
-                    }
-                }
-            }
-            catch
-            {
-                notifyIcon.Icon = SystemIcons.Application;
-            }
-            notifyIcon.Visible = true;
-            notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
-
-            ContextMenuStrip contextMenu = new ContextMenuStrip();
-            _statusMenuItem = new ToolStripMenuItem("Status: Disconnected");
-            _statusMenuItem.Enabled = false;
-
-            _openWebUiMenuItem = new ToolStripMenuItem("Open Web UI");
-            _openWebUiMenuItem.Click += OpenWebUiMenuItem_Click;
-            _openWebUiMenuItem.Enabled = false; // Initially disabled
-
-            _reconnectMenuItem = new ToolStripMenuItem("[Reconnect]");
-            _reconnectMenuItem.Click += ReconnectMenuItem_Click;
-
-            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("Exit");
-            exitMenuItem.Click += ExitMenuItem_Click;
-
-            contextMenu.Items.Add(_statusMenuItem);
-            contextMenu.Items.Add(_reconnectMenuItem);
-            contextMenu.Items.Add(_openWebUiMenuItem);
-            contextMenu.Items.Add(new ToolStripSeparator());
-            contextMenu.Items.Add(exitMenuItem);
-
-notifyIcon.ContextMenuStrip = contextMenu;
-            
-            // Initial status update for tooltip
-            UpdateStatus("Disconnected");
-        }
-
-        private void OpenWebUiMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenBrowser();
-        }
-
-        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
-        {
-            if (_webSocket?.State == WebSocketState.Open)
-            {
-                OpenBrowser();
-            }
-        }
-
-        private void OpenBrowser()
-        {
-            try
-            {
-                string url = $"http://localhost:{_port}/";
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Could not open browser: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void ReconnectMenuItem_Click(object sender, EventArgs e)
-        {
-            lock (_connectionLock)
-            {
-                if (_isConnecting) return;
-            }
-            _ = ConnectWebSocketAsync(_cts.Token);
-        }
-
-        private async Task ConnectWebSocketAsync(CancellationToken cancellationToken)
-        {
-            lock (_connectionLock)
-            {
-                if (_isConnecting) return;
-                _isConnecting = true;
-            }
-            UpdateStatus("Connecting...");
-            const int maxRetries = 5;
-            const int retryTimeoutMs = 1000;
-            bool connected = false;
-
-            for (int i = 0; i < maxRetries; i++)
-            {
-                if (cancellationToken.IsCancellationRequested) break;
-                _webSocket?.Dispose();
-                _webSocket = new ClientWebSocket();
-                try
-                {
-                    using (var ctsWithTimeout = new CancellationTokenSource(retryTimeoutMs))
-                    using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, ctsWithTimeout.Token))
-                    {
-                        await _webSocket.ConnectAsync(new Uri(_websocketUrl), linkedCts.Token);
-                    }
-                    connected = true;
-                    break;
-                }
-                catch (Exception) { /* 接続失敗（タイムアウト含む）*/ }
-            }
-
-            if (connected)
-            {
-                UpdateStatus("Connected");
-                await ReceiveMessagesAsync(_webSocket, cancellationToken);
-                UpdateStatus("Disconnected");
-            }
-            else if (!cancellationToken.IsCancellationRequested)
-            {
+            _webSocketClient = new WebSocketClient(_websocketUrl);
+            _webSocketClient.OnConnected += () => UpdateStatus("Connected");
+            _webSocketClient.OnDisconnected += () => UpdateStatus("Disconnected");
+            _webSocketClient.OnMessageReceived += ProcessWebSocketMessage;
+            _webSocketClient.OnError += (errorMessage) => {
+                _notifyIcon.ShowBalloonTip(3000, "Unofficial CueMix5 Watcher", errorMessage, ToolTipIcon.Error);
                 UpdateStatus("Connection failed");
-                notifyIcon.ShowBalloonTip(3000, "Unofficial CueMix5 Watcher", "Failed to connect after 5 attempts.", ToolTipIcon.Error);
-            }
-
-            lock (_connectionLock)
-            {
-                _isConnecting = false;
-            }
+            };
         }
 
-        private async Task ReceiveMessagesAsync(ClientWebSocket webSocket, CancellationToken cancellationToken)
+        private void LoadAppSettings()
         {
-            var buffer = new byte[1024 * 4];
-            try
-            {
-                while (webSocket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
-                {
-                    var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
-                    if (result.MessageType == WebSocketMessageType.Close) break;
-                    if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                        ProcessWebSocketMessage(message);
-                    }
-                }
-            }
-            catch (Exception) { /* エラーは無視 */ }
-        }
+            _settings = WatcherSettings.Load();
 
-        private void LoadConfiguration()
-        {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string configDirInAppData = Path.Combine(appDataPath, "uo_cm5_webapi");
             string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
@@ -261,7 +67,6 @@ notifyIcon.ContextMenuStrip = contextMenu;
 
             if (!File.Exists(settingsPath)) settingsPath = Path.Combine(configDirInProject, "settings.json");
 
-            int port = 3000;
             if (File.Exists(settingsPath))
             {
                 try
@@ -276,46 +81,188 @@ notifyIcon.ContextMenuStrip = contextMenu;
                         }
                     }
                 }
-                catch (Exception) { /* エラーは無視 */ }
+                catch (Exception) { /* Ignore errors, use default port */ }
             }
             _websocketUrl = $"ws://localhost:{_port}/ws";
         }
+        
+        private void ApplyOverlaySettings()
+        {
+             _overlayForm.ApplySettings(_settings);
+        }
 
-        private void Form1_Load(object sender, EventArgs e)
+
+        private void UpdateStatus(string status)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => UpdateStatus(status)));
+                return;
+            }
+
+            bool isConnected = status == "Connected";
+            _statusMenuItem.Text = $"Status: {status}";
+            _reconnectMenuItem.Enabled = !isConnected;
+            _openWebUiMenuItem.Enabled = isConnected;
+
+            string tooltipText = $"Unofficial CueMix5 Watcher v{_apiVersion}\nStatus: {status}";
+            if (tooltipText.Length > 63)
+            {
+                tooltipText = tooltipText.Substring(0, 63);
+            }
+            _notifyIcon.Text = tooltipText;
+        }
+
+        private async Task FetchVersionAndUpdateTooltip()
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.Timeout = TimeSpan.FromSeconds(5);
+                    var response = await httpClient.GetStringAsync($"http://localhost:{_port}/api/version");
+                    using (JsonDocument doc = JsonDocument.Parse(response))
+                    {
+                        if (doc.RootElement.TryGetProperty("version", out JsonElement versionElement) && versionElement.GetString() is string version)
+                        {
+                            _apiVersion = version;
+                        }
+                    }
+                }
+            }
+            catch (Exception) { /* Ignore errors */ }
+            finally
+            {
+                if (_statusMenuItem?.Text != null)
+                {
+                    UpdateStatus(_statusMenuItem.Text.Replace("Status: ", ""));
+                }
+            }
+        }
+
+        private void SetupNotifyIcon()
+        {
+            _notifyIcon = new NotifyIcon();
+            try
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                using (var stream = assembly.GetManifestResourceStream("UnofficialCueMix5Watcher.icon_watcher.ico"))
+                {
+                    if(stream != null)
+                        _notifyIcon.Icon = new Icon(stream);
+                    else
+                        _notifyIcon.Icon = SystemIcons.Application;
+                }
+            }
+            catch { _notifyIcon.Icon = SystemIcons.Application; }
+            _notifyIcon.Visible = true;
+            _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            _statusMenuItem = new ToolStripMenuItem("Status: Disconnected") { Enabled = false };
+            _openWebUiMenuItem = new ToolStripMenuItem("Open Web UI", null, OpenWebUiMenuItem_Click) { Enabled = false };
+            _reconnectMenuItem = new ToolStripMenuItem("[Reconnect]", null, ReconnectMenuItem_Click);
+            var settingsMenuItem = new ToolStripMenuItem("Settings...", null, SettingsMenuItem_Click);
+            _overlayEnabledMenuItem = new ToolStripMenuItem("Enable Overlay", null, OverlayEnabledMenuItem_Click)
+            {
+                CheckOnClick = true,
+                Checked = _settings.OverlayEnabled
+            };
+            var exitMenuItem = new ToolStripMenuItem("Exit", null, ExitMenuItem_Click);
+
+            contextMenu.Items.AddRange(new ToolStripItem[] {
+                _statusMenuItem, _reconnectMenuItem, _openWebUiMenuItem, settingsMenuItem,
+                new ToolStripSeparator(), _overlayEnabledMenuItem, new ToolStripSeparator(), exitMenuItem
+            });
+
+            _notifyIcon.ContextMenuStrip = contextMenu;
+            UpdateStatus("Disconnected");
+        }
+
+        private void SettingsMenuItem_Click(object? sender, EventArgs e)
+        {
+            _isSettingsFormOpen = true;
+            try
+            {
+                using (var settingsForm = new SettingsForm(_settings, _overlayForm, _port))
+                {
+                    if (settingsForm.ShowDialog() == DialogResult.OK)
+                    {
+                        _settings.Save();
+                        ApplyOverlaySettings();
+                        _overlayEnabledMenuItem.Checked = _settings.OverlayEnabled;
+                    }
+                    else
+                    {
+                        _settings = WatcherSettings.Load();
+                        ApplyOverlaySettings();
+                    }
+                }
+            }
+            finally
+            {
+                _isSettingsFormOpen = false;
+            }
+        }
+
+        private void OverlayEnabledMenuItem_Click(object? sender, EventArgs e)
+        {
+            _settings.OverlayEnabled = _overlayEnabledMenuItem.Checked;
+            _settings.Save();
+
+            if (_settings.OverlayEnabled)
+            {
+                _overlayForm.ShowMessage("Overlay Enabled", _settings.Duration);
+            }
+            else
+            {
+                _overlayForm.ShowMessage("Overlay Disabled", _settings.Duration);
+            }
+        }
+
+        private void OpenWebUiMenuItem_Click(object? sender, EventArgs e) => OpenBrowser();
+        
+        private void NotifyIcon_DoubleClick(object? sender, EventArgs e)
+        {
+            SettingsMenuItem_Click(sender, e);
+        }
+
+        private void OpenBrowser()
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo($"http://localhost:{_port}/") { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open browser: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ReconnectMenuItem_Click(object? sender, EventArgs e)
+        {
+            _ = _webSocketClient.ConnectAsync();
+        }
+
+        private void Form1_Load(object? sender, EventArgs e)
         {
             this.Hide();
             this.ShowInTaskbar = false;
         }
 
-        private void ExitMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
+        private void ExitMenuItem_Click(object? sender, EventArgs e) => Application.Exit();
 
-        private async void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void Form1_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts.Dispose();
-            }
-            if (_webSocket != null && _webSocket.State == WebSocketState.Open)
-            {
-                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                _webSocket.Dispose();
-            }
-            if (_overlayForm != null)
-            {
-                _overlayForm.Dispose();
-            }
-            if (notifyIcon != null)
-            {
-                notifyIcon.Dispose();
-            }
+            _webSocketClient?.Dispose();
+            _overlayForm?.Dispose();
+            _notifyIcon?.Dispose();
         }
 
         private void ProcessWebSocketMessage(string message)
         {
+            if (!_settings.OverlayEnabled) return;
+
             try
             {
                 using (JsonDocument doc = JsonDocument.Parse(message))
@@ -326,111 +273,68 @@ notifyIcon.ContextMenuStrip = contextMenu;
                         if (root.TryGetProperty("payload", out JsonElement payloadElement) &&
                             payloadElement.TryGetProperty("state", out JsonElement stateElement) && stateElement.ValueKind == JsonValueKind.Object)
                         {
-                            // state オブジェクトから直接 categoryName と name を取得
-                            if (stateElement.TryGetProperty("categoryName", out JsonElement categoryNameElement) && categoryNameElement.ValueKind == JsonValueKind.String &&
-                                stateElement.TryGetProperty("name", out JsonElement operationNameElement) && operationNameElement.ValueKind == JsonValueKind.String)
+                            if (stateElement.TryGetProperty("categoryName", out JsonElement categoryNameElement) && categoryNameElement.GetString() is string categoryName &&
+                                stateElement.TryGetProperty("name", out JsonElement operationNameElement) && operationNameElement.GetString() is string operationName)
                             {
-                                string categoryName = categoryNameElement.GetString()!;
-                                string operationName = operationNameElement.GetString()!;
                                 string displayName = $"{categoryName} / {operationName}";
-
                                 string displayMessage;
-                                bool isMuted = false;
+                                bool isMuted = stateElement.TryGetProperty("isMuted", out var isMutedElement) && isMutedElement.ValueKind == JsonValueKind.True;
+                                string type = stateElement.TryGetProperty("type", out var typeElementState) ? typeElementState.GetString() ?? "" : "";
 
-                                // isMuted フラグのチェック
-                                if (stateElement.TryGetProperty("isMuted", out JsonElement isMutedElement) && isMutedElement.ValueKind == JsonValueKind.True)
+                                if ((type == "mixvol" || type == "Trim" || type == "Gain") &&
+                                    stateElement.TryGetProperty("currentValue", out JsonElement valueElement) &&
+                                    stateElement.TryGetProperty("min", out JsonElement minElement) &&
+                                    stateElement.TryGetProperty("max", out JsonElement maxElement))
                                 {
-                                    isMuted = isMutedElement.GetBoolean();
-                                }
+                                    var dbValue = valueElement.GetDouble();
+                                    var min = minElement.GetDouble();
+                                    var max = maxElement.GetDouble();
+                                    const int barLength = 20;
 
-                                string type = stateElement.TryGetProperty("type", out JsonElement typeElementState) ? typeElementState.GetString() ?? "" : "";
-
-                                // min, max, currentValue は複数の場所で使うので、ここで取得しておく
-                                JsonElement valueElement = default;
-                                JsonElement minElement = default;
-                                JsonElement maxElement = default;
-
-                                // ボリューム系のコマンドタイプでmin/max/currentValueが存在する場合のみ取得を試みる
-                                bool hasVolumeProps = (type == "mixvol" || type == "Trim" || type == "Gain") &&
-                                                      stateElement.TryGetProperty("currentValue", out valueElement) &&
-                                                      stateElement.TryGetProperty("min", out minElement) &&
-                                                      stateElement.TryGetProperty("max", out maxElement);
-
-                                var dbValue = hasVolumeProps ? valueElement.GetDouble() : 0.0; // デフォルト値
-
-                                // mixvol の場合は isMuted フラグで表示を決定
-                                if (isMuted && type == "mixvol")
-                                {
-                                    // ミュート中だが、ボリューム値とバーも表示する
-                                    if (hasVolumeProps) // min/max/currentValue が取得できた場合
+                                    if ((type == "mixvol" && isMuted) || (type == "Trim" && dbValue <= min))
                                     {
-                                        var min = minElement.GetDouble(); // スコープ内
-                                        var max = maxElement.GetDouble(); // スコープ内
-
-                                        const int barLength = 20;
                                         double percentage = (max - min) > 0 ? (dbValue - min) / (max - min) : 0;
                                         int filledCount = (int)Math.Round(barLength * percentage);
                                         string volumeBar = new string('■', filledCount) + new string('□', barLength - filledCount);
-                                        
                                         string volumeValueString = dbValue.ToString("F1");
                                         displayMessage = $"{displayName} : Muted : {volumeValueString} dB\n{volumeBar}";
                                     }
                                     else
                                     {
-                                        displayMessage = $"{displayName} : Muted"; // Fallback if min/max/currentValue missing
+                                        double percentage = (max - min) > 0 ? (dbValue - min) / (max - min) : 0;
+                                        int filledCount = (int)Math.Round(barLength * percentage);
+                                        string volumeBar = new string('■', filledCount) + new string('□', barLength - filledCount);
+                                        
+                                        string volumeValueString = dbValue.ToString("F1");
+                                        if (type == "mixvol" || type == "Trim")
+                                        {
+                                            displayMessage = $"{displayName} : {volumeValueString} dB\n{volumeBar}";
+                                        }
+                                        else // Gain
+                                        {
+                                            displayMessage = $"{displayName} : +{volumeValueString} dB\n{volumeBar}";
+                                        }
                                     }
                                 }
-                                else // isMuted ではない、または mixvol ではない場合
+                                else
                                 {
-                                    if (hasVolumeProps)
-                                    {
-                                        var min = minElement.GetDouble(); // スコープ内
-                                        var max = maxElement.GetDouble(); // スコープ内
-
-                                        string volumeBar = "";
-
-                                        // dbValue <= min の場合は Muted と表示 (Trim のみ)
-                                        if (type == "Trim" && dbValue <= min)
-                                        {
-                                            displayMessage = $"{displayName} : Muted";
-                                        }
-                                        else if (type == "mixvol" || type == "Trim" || type == "Gain")
-                                        {
-                                            const int barLength = 20;
-                                            double percentage = (max - min) > 0 ? (dbValue - min) / (max - min) : 0;
-                                            int filledCount = (int)Math.Round(barLength * percentage);
-                                            volumeBar = new string('■', filledCount) + new string('□', barLength - filledCount);
-                                            
-                                            string volumeValueString;
-                                            if (type == "mixvol" || type == "Trim")
-                                            {
-                                                volumeValueString = dbValue.ToString("F1");
-                                                displayMessage = $"{displayName} : {volumeValueString} dB\n{volumeBar}";
-                                            }
-                                            else // Gain
-                                            {
-                                                volumeValueString = dbValue.ToString("F1");
-                                                displayMessage = $"{displayName} : +{volumeValueString} dB\n{volumeBar}";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // Gain, Trim, mixvol 以外のタイプ (ただしhasVolumePropsがtrueの場合)
-                                            displayMessage = $"{displayName} : {dbValue.ToString("F1")}"; // Ensure it's a string
-                                        }
-                                    }
-                                    else // ボリュームプロパティがない場合
-                                    {
-                                        displayMessage = $"{displayName} : ---";
-                                    }
+                                    displayMessage = $"{displayName} : ---";
                                 }
-                                _overlayForm.ShowMessage(displayMessage, 2000);
+
+                                if (_isSettingsFormOpen)
+                                {
+                                    _overlayForm.UpdatePreviewText(displayMessage);
+                                }
+                                else
+                                {
+                                    _overlayForm.ShowMessage(displayMessage, _settings.Duration);
+                                }
                             }
                         }
                     }
                 }
             }
-            catch (Exception) { /* エラーは無視 */ }
+            catch (Exception) { /* Ignore parsing errors */ }
         }
     }
 }

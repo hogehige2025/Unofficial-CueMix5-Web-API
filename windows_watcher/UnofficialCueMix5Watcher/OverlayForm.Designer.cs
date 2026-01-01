@@ -15,6 +15,7 @@ namespace UnofficialCueMix5Watcher
         {
             if (disposing && (components != null))
             {
+                _hideTimer?.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -28,30 +29,16 @@ namespace UnofficialCueMix5Watcher
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelMessage = new UnofficialCueMix5Watcher.OutlinedLabel();
             this.SuspendLayout();
-            // 
-            // labelMessage
-            // 
-            this.labelMessage.Dock = System.Windows.Forms.DockStyle.None;
-            this.labelMessage.Location = new System.Drawing.Point(0, 0);
-            this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(300, 100);
-            this.labelMessage.TabIndex = 0;
-            this.labelMessage.Text = "メッセージ";
-            this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // OverlayForm
             // 
             this.ClientSize = new System.Drawing.Size(300, 100);
-            this.Controls.Add(this.labelMessage);
             this.Name = "OverlayForm";
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private OutlinedLabel labelMessage;
     }
 }
