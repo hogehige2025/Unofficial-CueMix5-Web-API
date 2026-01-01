@@ -11,12 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\..\config\uo_cm5_watcher.cfg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\..\resource\icon_watcher.ico">
       <Link>icon_watcher.ico</Link>
     </EmbeddedResource>

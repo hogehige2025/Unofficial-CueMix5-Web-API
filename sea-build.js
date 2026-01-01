@@ -84,8 +84,7 @@ async function build() {
         'uo_cm5_watcher.exe',
         'uo_cm5_watcher.dll',
         'uo_cm5_watcher.runtimeconfig.json',
-        'uo_cm5_watcher.deps.json',
-        'uo_cm5_watcher.cfg'
+        'uo_cm5_watcher.deps.json'
     ];
     watcherFiles.forEach(file => {
         const src = path.join(watcherBuildDir, file);

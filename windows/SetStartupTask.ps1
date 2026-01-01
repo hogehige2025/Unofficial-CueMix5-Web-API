@@ -53,7 +53,7 @@ if (-not (Check-Admin)) { pause; return }
 
 # --- Enable Mode ---
 if ($Mode -eq 'Enable') {
-    Write-Host-Color "`n--- Cleaning up old commands.json ---" -Color Cyan
+    Write-Host-Color "`n--- Cleaning up old settings ---" -Color Cyan
     $commandsJsonPath = Join-Path $AppDataConfigPath "commands.json"
     if (Test-Path $commandsJsonPath) {
         try {
@@ -65,7 +65,17 @@ if ($Mode -eq 'Enable') {
     } else {
         Write-Host-Color "  -> '$commandsJsonPath' does not exist. Skipping removal." -Color Yellow
     }
-    
+    $oldConfigPath = "uo_cm5_watcher.cfg"
+    if (Test-Path $oldConfigPath) {
+        try {
+            Remove-Item $oldConfigPath -Force
+            Write-Host-Color "  -> Success: Removed '$oldConfigPath'." -Color Green
+        } catch {
+            Write-Host-Color "  -> ERROR: Failed to remove '$oldConfigPath'. Error: $_" -Color Red
+        }
+    } else {
+        Write-Host-Color "  -> '$oldConfigPath' does not exist. Skipping removal." -Color Yellow
+    }
     foreach ($app in $Applications) {
         Write-Host-Color "`n--- Register task: $($app.TaskName) ---" -Color Cyan
         $task = Get-ScheduledTask -TaskName $app.TaskName -ErrorAction SilentlyContinue
